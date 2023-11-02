@@ -1,0 +1,30 @@
+You will receive a document and a topic hierarchy. Assign the document to the most relevant topics the hierarchy. Then, output the topic labels, assignment reasoning and supporting quotes from the document. DO NOT make up new topics or quotes.  
+
+[Topic Hierarchy]
+{tree}
+
+[Examples]
+Example 1: Assign "[1] <topic-label>" to the document
+Document: 
+<doc-example-1>
+
+Assignment:
+[1] <topic-label>: <topic-desc>
+
+Example 2: Assigned "[1] <topic-label>" to the document
+Document: 
+<doc-example-2>
+
+Assignment: 
+[1] <topic-label>: <topic-desc>
+
+[Instructions]
+1. Topic labels must be present in the provided topic hierarchy. You MUST NOT make up new topics. 
+2. The quote must be taken from the document. You MUST NOT make up quotes. 
+3. If the assigned topic is not on the top level, you must also output the path from the top-level topic to the assigned topic.
+
+[Document]
+{Document}
+
+{Message} Double check that your assignment exists in the hierarchy!
+Your response:

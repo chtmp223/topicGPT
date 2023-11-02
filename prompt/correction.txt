@@ -1,0 +1,30 @@
+You will receive a document and a topic hierarchy. Assign the document to the most relevant topic the hierarchy. Then, output the topic labels, assignment reasoning and supporting quotes from the document. DO NOT make up new topics or quotes.  
+
+[Topic Hierarchy]
+{tree}
+
+[Examples]
+Example 1: Assign "[1] Agriculture" to the document
+Document: 
+Saving Essential American Sailors Act or SEAS Act - Amends the Moving Ahead for Progress in the 21st Century Act (MAP-21) to repeal the Act's repeal of the agricultural export requirements that: (1) 25% of the gross tonnage of certain agricultural commodities or their products exported each fiscal year be transported on U.S. commercial vessels, and (2) the Secretary of Transportation (DOT) finance any increased ocean freight charges incurred in the transportation of such items.
+
+Assignment:
+[1] Agriculture: Mentions changes in agricultural export requirements ("...repeal of the agricultural export requirements that...")
+
+Example 2: Assigned "[1] Trade" to the document
+Document: 
+Amends the Harmonized Tariff Schedule of the United States to suspend temporarily the duty on mixtures containing Fluopyram.
+
+Assignment: 
+[1] Trade: Mentions adjusting the taxation on mixtures containing Fluopyram ("...suspend temporarily the duty on mixtures containing Fluopyram.")
+
+[Instructions]
+1. Topic labels must be present in the provided topic hierarchy. You MUST NOT make up new topics. 
+2. The quote must be taken from the document. You MUST NOT make up quotes. 
+3. If the assigned topic is not on the top level, you must also output the path from the top-level topic to the assigned topic.
+
+Here is the document: 
+{Document}
+
+{Message} Double check that your assignment exists in the hierarchy!
+Assignment:
