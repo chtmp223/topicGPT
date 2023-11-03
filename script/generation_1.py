@@ -121,12 +121,10 @@ def generate_topics(topics_root, topics_list, context_len, docs, seed_file, depl
                     else: 
                         if verbose: print('Lower-level topics detected. Skipping...')
 
-            with open(f"data/output/g1_{deployment_name}.log", 'a') as f: 
-                print(f"Document: {i+1}\nResponse: {response}", file=f)
             if verbose: 
                 print(f"Document: {i+1}")
                 print(f"Prompt length: {num_tokens_from_messages(prompt + response, 'gpt-4')}")
-                print(f"Response: {response}")
+                print(f"Topics: {response}")
                 print("--------------------")
             responses.append(response)
         except Exception as e: 
@@ -160,7 +158,7 @@ def main():
     context_len = context - max_tokens
     
     # Load data ---- 
-    df = pd.read_json(args.data, lines=True)
+    df = pd.read_json(str(args.data), lines=True)
     docs = df["text"].tolist()
     generation_prompt = open(args.prompt_file, "r").read()
     topics_root, topics_list = generate_tree(read_seed(args.seed_file))

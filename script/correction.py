@@ -128,8 +128,6 @@ def correct_topics(topics_root, df, errors,correction_prompt, deployment_name, c
             result="Error"
             traceback.print_exc()
         df.responses[i] = result
-        with open(f"data/output/c_log_{deployment_name}.txt", 'a') as f: 
-            print(f"Document {i+1}: {result}", file=f)
     return df
 
 

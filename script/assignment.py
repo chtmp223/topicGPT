@@ -76,15 +76,16 @@ def assign_topics(topics_root, docs, assignment_prompt, deployment_name, context
         try:
             prompt = assignment_prompt.format(Document=doc, tree=seed_str)
             result = api_call(prompt, deployment_name, temperature, max_tokens, top_p) 
-            if verbose:  print(f"Document {i+1}: {result}")
+            if verbose: 
+                print(f"Document: {i+1}")
+                print(f"Response: {result}")
+                print("--------------------")
             res.append(result)
         except Exception as e: 
             result="Error"
             res.append("Error") 
             traceback.print_exc()
         prompted_docs.append(doc)
-        with open(f"data/output/a_log_{deployment_name}.txt", 'a') as f: 
-            print(f"Document {i+1}: {result}", file=f)
     return res, prompted_docs
 
 
