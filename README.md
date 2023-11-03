@@ -1,5 +1,5 @@
 # TopicGPT
-This repository contains scripts and prompts for our paper ["TopicGPT: Topic Modeling by Prompting Large Language Models"](). 
+This repository contains scripts and prompts for our paper ["TopicGPT: Topic Modeling by Prompting Large Language Models"](https://arxiv.org/abs/2311.01449). 
 
 ![TopicGPT Pipeline Overview](pipeline.png)
 
@@ -59,5 +59,13 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
 
 ## Cite
 ```
+@misc{pham2023topicgpt,
+      title={TopicGPT: A Prompt-based Topic Modeling Framework}, 
+      author={Chau Minh Pham and Alexander Hoyle and Simeng Sun and Mohit Iyyer},
+      year={2023},
+      eprint={2311.01449},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
 ```
 
