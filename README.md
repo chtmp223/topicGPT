@@ -22,6 +22,7 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
     ```
 - Put the data file in `data/input`. There is also a sample data file `data/input/sample.jsonl` to debug the code.
 - If you want to sample a subset of the data for topic generation, run `python script/data.py --data <data_file> --num_samples 1000 --output <output_file>`. This will sample 1000 documents from the data file and save it to `<output_file>`. You can also specify `--num_samples` to sample a different number of documents, see the paper for more detail.
+- Raw dataset: [[link]](https://drive.google.com/drive/folders/1rCTR5ZQQ7bZQoewFA8eqV6glP6zhY31e?usp=sharing). 
 
 ## Pipeline
 - You can either run `script/run.sh` to run the entire pipeline or run each step individually. See the notebook in `script/example.ipynb` for a step-by-step guide.
