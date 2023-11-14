@@ -35,7 +35,6 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
         response = client.chat.completions.create(model=deployment_name,          # change keyword "model" to "engine" if error is raised
         temperature=float(temperature),  
         max_tokens=int(max_tokens),
-        request_timeout=1000, 
         top_p=float(top_p),
         messages=[
             {"role": "system", "content": ""},
