@@ -1,4 +1,6 @@
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 import time
 import datetime
 import pytz
@@ -11,8 +13,10 @@ from itertools import islice
 import requests
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 import os
-import openai
-openai.api_key = os.environ["OPENAI_API_KEY"]
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
 PERPLEXITY_API_KEY = ""         # Add perplexity API key to the environment variable & load it here. 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
 
@@ -28,17 +32,15 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
     '''
     time.sleep(5)                           # Change to avoid rate limit
     if deployment_name in ["gpt-35-turbo", "gpt-4", "gpt-3.5-turbo"]:
-        response = openai.ChatCompletion.create(
-            model=deployment_name,          # change keyword "model" to "engine" if error is raised
-            temperature=float(temperature),  
-            max_tokens=int(max_tokens),
-            request_timeout=1000, 
-            top_p=float(top_p),
-            messages=[
-                {"role": "system", "content": ""},
-                {"role": "user", "content": prompt},
-                ]
-            )
+        response = client.chat.completions.create(model=deployment_name,          # change keyword "model" to "engine" if error is raised
+        temperature=float(temperature),  
+        max_tokens=int(max_tokens),
+        request_timeout=1000, 
+        top_p=float(top_p),
+        messages=[
+            {"role": "system", "content": ""},
+            {"role": "user", "content": prompt},
+            ])
         return response['choices'][0]['message']['content']
     elif deployment_name in ["llama-2-70b-chat", "codellama-34b-instruct", "mistral-7b-instruct"]:
         payload = {
@@ -71,7 +73,7 @@ def get_ada_embedding(text, model="text-embedding-ada-002"):
     '''
     Get text embedding from openai API
     '''
-    return openai.Embedding.create(input=[text], engine=model)["data"][0]["embedding"]
+    return client.embeddings.create(input=[text], engine=model)["data"][0]["embedding"]
 
 def num_tokens_from_messages(messages, model):
     '''
