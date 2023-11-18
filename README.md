@@ -4,11 +4,12 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
 ![TopicGPT Pipeline Overview](pipeline.png)
 
 ## Updates
+- [02/18/23] Second-level topic generation code and refinement code are uploaded.
 - [02/11/23] Basic pipeline is uploaded. Refinement and second-level topic generation code are coming soon.
 
 ## Setup
 - Install the requirements: `pip install -r requirements.txt`
-- Set your OpenAI key according to [this article](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety). 
+- Set your OpenAI key according to [this article](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
 - Refer to https://openai.com/pricing/ for OpenAI API pricing or to https://blog.perplexity.ai/blog/introducing-pplx-api for Perplexity API pricing.
 
 ## Data
@@ -37,6 +38,22 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
                             --topic_file data/output/generation_1.md \
                             --verbose True
     ```
+
+- Topic refinement: If you want to refine the topics, modify the prompts according to the templates in `templates/refinement.txt`. Then, to run topic refinement, do: 
+    ```
+    python3 refinement.py --deployment_name gpt-4 \
+                    --max_tokens 500 --temperature 0.0 --top_p 0.0 \
+                    --prompt_file prompt/refinement.txt \
+                    --generation_file data/output/generation_1.jsonl \
+                    --topic_file data/output/generation_1.md \
+                    --out_file data/output/refinement.md \
+                    --verbose True \
+                    --updated_file data/output/refinement.jsonl \
+                    --mapping_file data/output/refinement_mapping.txt \
+                    --refined_again False \
+                    --remove False
+    ```
+
 - Topic assignment: Modify the prompts according to the templates in `templates/assignment.txt`. Then, to run topic assignment, do: 
     ```
     python3 script/assignment.py --deployment_name gpt-3.5-turbo \
@@ -56,6 +73,18 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
                             --topic_file data/output/generation_1.md \
                             --out_file data/output/assignment_corrected.jsonl \
                             --verbose True
+    ```
+
+- Second-level topic generation: If you want to generate second-level topics, modify the prompts according to the templates in `templates/generation_2.txt`. Then, to run second-level topic generation, do: 
+    ```
+    python3 script/generation_2.py --deployment_name gpt-4 \
+                    --max_tokens 300 --temperature 0.0 --top_p 0.0 \
+                    --data data/output/generation_1.jsonl \
+                    --seed_file data/output/generation_1.md \
+                    --prompt_file prompt/generation_2.txt \
+                    --out_file data/output/generation_2.jsonl \
+                    --topic_file data/output/generation_2.md \
+                    --verbose True
     ```
 
 ## Cite

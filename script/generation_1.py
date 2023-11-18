@@ -1,8 +1,5 @@
 import pandas as pd
 from utils import *
-import openai
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 from tqdm import tqdm
 import regex
 import traceback

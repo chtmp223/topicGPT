@@ -1,0 +1,35 @@
+You will receive a list of topics that belong to the same level of a topic hierarchy. Your task is to merge topics that are paraphrases or near duplicates of one another. Return "None" if no modification is needed. 
+
+Here are some examples: 
+[Example 1: Merging topics [1] Employer Taxes and [1] Employment Tax Reporting into [1] Employment Taxes]
+Topic List: 
+[1] Employer Taxes: Mentions taxation policy for employer
+[1] Employment Tax Reporting: Mentions reporting requirements for employer
+[1] Immigration: Mentions policies and laws on the immigration process
+[1] Voting: Mentions rules and regulation for the voting process
+
+Your response: 
+[1] Employment Taxes: Mentions taxation report and requirement for employer ([1] Employer Taxes, [1] Employment Tax Reporting)
+
+
+[Example 2: Merging topics [2] Digital Literacy and [2] Telecommunications into [2] Technology]
+[2] Mathematics: Discuss mathematical concepts, figures and breakthroughs. 
+[2] Digital Literacy: Discuss the ability to use technology to find, evaluate, create, and communicate information.
+[2] Telecommunications: Mentions policies and regulations related to the telecommunications industry, including wireless service providers and consumer rights.
+
+[Your response] 
+[2] Technology: Discuss technology and its impact on society. ([2] Digital Literacy, [2] Telecommunications)
+
+[Rules]
+- Each line represents a topic, with a level indicator and a topic label. 
+- Perform the following operations as many times as needed: 
+    - Merge relevant topics into a single topic.
+    - Do nothing and return "None" if no modification is needed.
+- When merging, the output format should contain a level indicator, the updated label and description, followed by the original topics.
+
+
+[Topic List]
+{Topics}
+
+Output the modification or "None" where appropriate. Do not output anything else. 
+[Your response]

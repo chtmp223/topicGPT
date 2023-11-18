@@ -1,0 +1,42 @@
+You will receive a branch from a topic hierarchy along with some documents assigned to the top-level topic of that branch. Your task is to identify generalizable second-level topics that can act as subtopics to the top-level topic in the provided branch. Add your topic(s) if they are missing from the provided branch. Otherwise, return the existing relevant or duplicate topics. 
+
+[Example: Return "[2] Exports" (new) and "[2] Tariff" (existing) as the subtopics of "[1] Trade" (provided).]
+Topic branch:
+[1] Trade
+    [2] Tariff
+    [2] Foreign Investments
+
+Document 1: 
+Export Promotion Act of 2012 - Amends the Export Enhancement Act of 1988 to revise the duties of the Trade Promotion Coordinating Committee (TPCC). Requires the TPCC to: (1) make a recommendation for the annual unified federal trade promotion budget to the President; and (2) review the proposed fiscal year budget of each federal agency with responsibility for export promotion or export financing activities before it is submitted to the Office of Management and Budget (OMB) and the President, when (as required by current law) assessing the appropriate levels and allocation of resources among such agencies in support of such activities. 
+
+Document 2: 
+Amends the Harmonized Tariff Schedule of the United States to suspend temporarily the duty on mixtures containing Fluopyram.
+
+Document 3: 
+Securing Exports Through Coordination and Technology Act - Amends the Foreign Relations Authorization Act, Fiscal Year 2003. Requires carriers obliged to file Shipper's Export Declarations to file them through AES (either directly or through intermediaries) before items are exported from any U.S. port, unless the Secretary of Commerce grants an exception. 
+
+Your response: 
+[1] Trade
+    [2] Exports (Document: 1, 3): Mentions export policies on goods.
+    [2] Tariff (Document: 2): Mentions tax policies on imports or exports of goods. 
+
+[Instructions]
+Step 1: Determine PRIMARY and GENERALIZABLE topics mentioned in the documents. 
+- The topics must be generalizable among the provided documents. 
+- Each topic must not be too specific so that it can accommodate future subtopics.
+- Each topic must reflect a SINGLE topic instead of a combination of topics.
+- Each top-level topic must have a level number and a short label. Second-level topics should also include the original documents associated with these topics (separated by commas) as well as a short description of the topic.
+- The number of topics proposed cannot exceed the number of documents provided.
+Step 2: Perform ONE of the following operations: 
+1. If the provided top-level topic is specific enough, DO NOT add any subtopics. Return the provided top-level topic.
+2. If your topic is duplicate or relevant to the provided topics, DO NOT add any subtopics. Return the existing relevant topic. 
+3. If your topic is relevant to and more specific than the provided top-level topic, add your topic as a second-level topic. DO NOT add to the first or third level of the hierarchy. 
+
+[Topic branch]
+{Topic}
+
+[Documents]
+{Document}
+ 
+DO NOT add first- or third-level topics.
+[Your response] 

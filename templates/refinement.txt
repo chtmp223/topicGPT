@@ -1,0 +1,29 @@
+You will receive a list of topics that belong to the same level of a topic hierarchy. Your task is to merge topics that are paraphrases or near duplicates of one another. Return "None" if no modification is needed. 
+
+Here are some examples: 
+[Example 1]
+Topic List: 
+<pairs of similar topics>
+
+Your response: 
+<topics being merged into an existing topic>
+
+[Example 2]
+<pairs of similar topics>
+
+Your response: 
+<topics being merged into a new topic>
+
+[Rules]
+- Each line represents a topic, with a level indicator and a topic label. 
+- Perform the following operations as many times as needed: 
+    - Merge relevant topics into a single topic.
+    - Do nothing and return "None" if no modification is needed.
+- When merging, the output format should contain a level indicator, the updated label and description, followed by the original topics.
+
+
+[Topic List]
+{Topics}
+
+Output the modification or "None" where appropriate. Do not output anything else. 
+[Your response]
