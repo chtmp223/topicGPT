@@ -100,9 +100,7 @@ def generate_topics(topics_root, topics_list, context_len, docs, seed_file, depl
                             dups[0].count += 1
                             running_dups += 1
                             if running_dups > early_stop: 
-                                cont = input(f"No new topic has been proposed for {early_stop} documents. Do you wish to continue? (y/n)")
-                                if cont == "n": 
-                                    return responses, topics_list, topics_root
+                                return responses, topics_list, topics_root
                         else:               # Add new topic if topic doesn't exist
                             new_node = Node(name=name, parent=topics_root, lvl=lvl, count=1, desc=desc)
                             topics_list.append(f"[{new_node.lvl}] {new_node.name}")
