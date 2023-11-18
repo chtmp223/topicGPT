@@ -1,6 +1,5 @@
 from openai import OpenAI
-
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+import os
 import time
 import datetime
 import pytz
@@ -12,12 +11,10 @@ import tiktoken
 from itertools import islice
 import requests
 from tenacity import retry, wait_random_exponential, stop_after_attempt
-import os
 from openai import OpenAI
-
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-
-PERPLEXITY_API_KEY = ""         # Add perplexity API key to the environment variable & load it here. 
+# Add perplexity API key to the environment variable & load it here. 
+PERPLEXITY_API_KEY = ""         
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
 
 
@@ -31,8 +28,9 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
     - top_p: top p parameter
     '''
     time.sleep(5)                           # Change to avoid rate limit
+    SystemExit
     if deployment_name in ["gpt-35-turbo", "gpt-4", "gpt-3.5-turbo"]:
-        response = client.chat.completions.create(model=deployment_name,          # change keyword "model" to "engine" if error is raised
+        response = client.chat.completions.create(model=deployment_name, 
         temperature=float(temperature),  
         max_tokens=int(max_tokens),
         top_p=float(top_p),
@@ -40,7 +38,7 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
             {"role": "system", "content": ""},
             {"role": "user", "content": prompt},
             ])
-        return response['choices'][0]['message']['content']
+        return response.choices[0].message.content
     elif deployment_name in ["llama-2-70b-chat", "codellama-34b-instruct", "mistral-7b-instruct"]:
         payload = {
             "model": deployment_name,

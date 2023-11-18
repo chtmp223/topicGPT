@@ -3,7 +3,7 @@ from utils import *
 import openai
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from tqdm import trange
+from tqdm import tqdm
 import regex
 import traceback
 from sentence_transformers import SentenceTransformer, util
@@ -15,43 +15,49 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 def prompt_formatting(generation_prompt, deployment_name, doc, seed_file, topics_list, context_len, verbose, max_top_len=100): 
     '''
     Format prompt to include document and seed topics
-    - generation_prompt: Prompt to generate topics with
-    - deployment_name: Model to run generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)
+    Handle cases where prompt is too long
+    - generation_prompt: Prompt for topic generation
+    - deployment_name: Model to run generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct')
     - doc: Document to include in prompt
     - seed_file: File to read seed topics from
     - topics_list: List of topics generated from previous iteration
-    - context_len: Max length of prompt
+    - context_len: Max context length for model (deployment_name)
     - verbose: Whether to print out results
     - max_top_len: Max length of topics to include in prompt (Modify if necessary)
     '''
+    sbert = SentenceTransformer('all-MiniLM-L6-v2')
+    # Format seed topics to include manually written topics + previously generated topics
+    topic_str = open(seed_file, 'r').read() + "\n" + "\n".join(topics_list)
+
+    # Calculate length of document, seed topics, and prompt ----
     doc_len = num_tokens_from_messages(doc, deployment_name)
     prompt_len = num_tokens_from_messages(generation_prompt, deployment_name)
-    topic_str = open(seed_file, 'r').read() + "\n" + "\n".join(topics_list)
     topic_len = num_tokens_from_messages(topic_str, deployment_name)
     total_len = prompt_len + doc_len + topic_len
 
-    sbert = SentenceTransformer('all-MiniLM-L6-v2')
-    if total_len > context_len:             
+    # Handle cases where prompt is too long ----
+    if total_len > context_len:           
+        # Truncate document if too long  
         if doc_len > (context_len - prompt_len - max_top_len):        
-            # Truncate document if too long
             if verbose: print(f"Document is too long ({doc_len} tokens). Truncating...")
             doc = truncating(doc, context_len - prompt_len - max_top_len)
             prompt = generation_prompt.format(Document=doc, Topics=topic_str)
+
+        # Truncate topic list to only include topics that are most similar to document
+        # Determined by cosine similarity between topic string & document embedding
         else:       
-            # Truncate topic list to keep relevant topics
-            # Determined by cosine similarity between topic string & document embedding
             if verbose: print(f"Too many topics ({topic_len} tokens). Pruning...")
-            cos_sim = {}
+            cos_sim = {}    # topic: cosine similarity w/ document
             doc_emb = sbert.encode(doc, convert_to_tensor=True)
-            for res in topics_list: 
-                top_emb = sbert.encode(res, convert_to_tensor=True)
-                cos_sim[res] = util.cos_sim(top_emb, doc_emb)
-            top_res = sorted(cos_sim, key=cos_sim.get, reverse=True)
+            for top in topics_list: 
+                top_emb = sbert.encode(top, convert_to_tensor=True)
+                cos_sim[top] = util.cos_sim(top_emb, doc_emb)
+            sim_topics = sorted(cos_sim, key=cos_sim.get, reverse=True)
 
             max_top_len = context_len - prompt_len - doc_len
             seed_len, seed_str = 0, ""
-            while seed_len < max_top_len and len(top_res) > 0: 
-                new_seed = top_res.pop(0)
+            while seed_len < max_top_len and len(sim_topics) > 0: 
+                new_seed = sim_topics.pop(0)
                 if seed_len + num_tokens_from_messages(new_seed + '\n', deployment_name) > max_top_len:      
                     break
                 else: 
@@ -63,7 +69,7 @@ def prompt_formatting(generation_prompt, deployment_name, doc, seed_file, topics
     return prompt
 
 
-def generate_topics(topics_root, topics_list, context_len, docs, seed_file, deployment_name, generation_prompt, temperature, max_tokens, top_p, verbose):
+def generate_topics(topics_root, topics_list, context_len, docs, seed_file, deployment_name, generation_prompt, temperature, max_tokens, top_p, verbose, early_stop=100):
     '''
     Generate topics from documents using LLMs
     - topics_root, topics_list: Tree and list of topics generated from previous iteration
@@ -73,63 +79,49 @@ def generate_topics(topics_root, topics_list, context_len, docs, seed_file, depl
     - deployment_name: Model to run generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)
     - generation_prompt: Prompt to generate topics with
     - verbose: Whether to print out results
+    - early_stop: Threshold for topic drought (Modify if necessary)
     '''
     top_emb = {}
     responses = []
+    running_dups = 0 
+    topic_format = regex.compile("^\[(\d+)\] ([\w\s]+):(.+)")
 
-    for i in trange(len(docs)): 
-        doc = docs[i]  
-        prompt = prompt_formatting(generation_prompt, deployment_name, doc, seed_file, topics_list, context_len, verbose)     
-
+    for i, doc in enumerate(tqdm(docs)):
+        prompt = prompt_formatting(generation_prompt, deployment_name, doc, 
+                                   seed_file, topics_list, context_len, verbose)     
         try: 
             response = api_call(prompt, deployment_name, temperature, max_tokens, top_p) 
-            if deployment_name.startswith("gpt"): 
-                single_format = regex.compile("^\[(\d+)\] ([\w\s]+):(.+)")
-                if "\n" in response: topics = response.split("\n")
-                else: topics = [response]
-                for t in topics: 
-                    t = t.strip()
-                    if regex.match(single_format, t):   
-                        # Check if topic is in correct format
-                        groups = regex.match(single_format, t)
-                        lvl, name, desc = int(groups[1]), groups[2].strip(), groups[3].strip()
-                        if lvl == 1:        
-                            # Only add level-1 topics
-                            dups = [s for s in topics_root.descendants if s.name == name]
-                            if len(dups) > 0:  
-                                dups[0].count += 1
-                            else: 
-                                new_node = Node(name=name, parent=topics_root, lvl=lvl, count=1, desc=desc)
-                                topics_list.append(f"[{new_node.lvl}] {new_node.name}")
-                        else: 
-                            if verbose: print('Lower-level topics detected. Skipping...')
-            else: 
-                single_format = regex.compile("\[(\d+)\] ([\w\s]+)[:\n]([\w\s,\.\-\/;']+)")
-                topic = regex.findall(single_format, response)
-                for t in topic: 
-                    lvl, name, desc = int(t[0]), t[1].strip() , t[2].strip()
-                    if "\n" in name: name = name.split("\n")[0]
-                    if lvl == 1: 
+            topics = response.split("\n")
+            for t in topics: 
+                t = t.strip()
+                if regex.match(topic_format, t):   
+                    groups = regex.match(topic_format, t)
+                    lvl, name, desc = int(groups[1]), groups[2].strip(), groups[3].strip()
+                    if lvl == 1:        
                         dups = [s for s in topics_root.descendants if s.name == name]
-                        if len(dups) > 0:  
+                        if len(dups) > 0:   # Update count if topic already exists
                             dups[0].count += 1
-                            if verbose: print(f"Duplicating")
-                        else: 
+                            running_dups += 1
+                            if running_dups > early_stop: 
+                                cont = input(f"No new topic has been proposed for {early_stop} documents. Do you wish to continue? (y/n)")
+                                if cont == "n": 
+                                    return responses, topics_list, topics_root
+                        else:               # Add new topic if topic doesn't exist
                             new_node = Node(name=name, parent=topics_root, lvl=lvl, count=1, desc=desc)
                             topics_list.append(f"[{new_node.lvl}] {new_node.name}")
-                            if verbose: print(f"Adding [{new_node.lvl}] {new_node.name}")
+                            running_dups = 0
                     else: 
                         if verbose: print('Lower-level topics detected. Skipping...')
-
             if verbose: 
                 print(f"Document: {i+1}")
-                print(f"Prompt length: {num_tokens_from_messages(prompt + response, 'gpt-4')}")
                 print(f"Topics: {response}")
                 print("--------------------")
             responses.append(response)
+
         except Exception as e: 
             traceback.print_exc()
             responses.append("Error")
+            
     return responses, topics_list, topics_root
 
 
@@ -145,7 +137,6 @@ def main():
     parser.add_argument("--out_file", type=str, default="data/output/generation_1.jsonl", help="file to write results to")
     parser.add_argument("--topic_file", type=str, default="data/output/generation_1.md", help="file to write topics to")
     parser.add_argument("--verbose", type=bool, default=False, help="whether to print out results")
-
     args = parser.parse_args()
 
     # Model configuration ----
@@ -171,6 +162,7 @@ def main():
         print(tree_view(topics_root), file=f)
 
     try: 
+        df = df.iloc[:len(responses)]
         df['responses'] = responses
         df.to_json(args.out_file, lines=True, orient='records')
     except Exception as e:
