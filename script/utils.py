@@ -28,7 +28,6 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
     - top_p: top p parameter
     '''
     time.sleep(5)                           # Change to avoid rate limit
-    SystemExit
     if deployment_name in ["gpt-35-turbo", "gpt-4", "gpt-3.5-turbo"]:
         response = client.chat.completions.create(model=deployment_name, 
         temperature=float(temperature),  
