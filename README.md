@@ -1,4 +1,8 @@
 # TopicGPT
+---
+* (Error 수정본): 기존 fork된 코드에서 script 폴더 내 파이썬 파일들을 전체적으로 수정하여, 원본 코드와 살짝 다를 수 있습니다.
+---
+  
 This repository contains scripts and prompts for our paper ["TopicGPT: Topic Modeling by Prompting Large Language Models"](https://arxiv.org/abs/2311.01449). 
 
 ![TopicGPT Pipeline Overview](pipeline.png)
