@@ -91,7 +91,7 @@ def assign_topics(topics_root, docs, assignment_prompt, deployment_name, context
 
 def main(): 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deployment_name", type=str, help="model ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
+    parser.add_argument("--deployment_name", type=str, default="gpt-3.5-turbo", help="model ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
     parser.add_argument("--max_tokens", type=int, default=500, help="max tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.0, help="temperature for generation")
     parser.add_argument("--top_p", type=float, default=0.0, help="top-p for generation")
