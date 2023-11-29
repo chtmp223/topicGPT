@@ -8,6 +8,7 @@ import random
 from sentence_transformers import SentenceTransformer, util
 import argparse
 import os
+from io import StringIO
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -133,17 +134,29 @@ def correct_topics(topics_root, df, errors,correction_prompt, deployment_name, c
 
 def main(): 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deployment_name", type=str, help="model to run topic generation with ('gpt-4', 'gpt-3.5-turbo', 'mistral-7b-instruct)")
+    parser.add_argument("--deployment_name", type=str, default="gpt-3.5-turbo", help="model to run topic generation with ('gpt-4', 'gpt-3.5-turbo', 'mistral-7b-instruct)")
     parser.add_argument("--max_tokens", type=int, default=500, help="max tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.0, help="temperature for generation")
     parser.add_argument("--top_p", type=float, default=0.0, help="top-p for generation")
-    parser.add_argument("--data", type=str, default="data/input/assignment.jsonl", help="data to run correction on")
+    parser.add_argument("--data", type=str, default="data/output/assignment.jsonl", help="data to run correction on")
     parser.add_argument("--prompt_file", type=str, default="prompt/correction.txt", help="file to read prompts from")
     parser.add_argument("--topic_file", type=str, default="data/output/generation_1.md", help="file to read topics from")
     parser.add_argument("--out_file", type=str, default="data/output/correction.jsonl", help="file to write results to")
     parser.add_argument("--verbose", type=bool, default=False, help="whether to print out results")
 
     args = parser.parse_args()
+    print(f'args.data: {args.data}')
+    # JSONL 파일을 문자열로 읽기
+    with open('data/output/assignment.jsonl', 'r') as file:
+        jsonl_string = file.read()
+
+    # JSONL 문자열을 Pandas 데이터프레임으로 변환
+    df = pd.read_json(StringIO(jsonl_string), lines=True)
+
+    # 데이터프레임 확인
+    print(df.head())
+    print()
+
 
     # Model configuration ----
     deployment_name, max_tokens, temperature, top_p = args.deployment_name, args.max_tokens, args.temperature, args.top_p
@@ -176,12 +189,5 @@ def main():
             if len(error + hallucinated) > 0:
                 print("There are still errors/hallucinated topics. Please check the output file. Reprompt by running the script again, changing data to the output file.")
 
-
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
