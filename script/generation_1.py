@@ -85,9 +85,10 @@ def generate_topics(topics_root, topics_list, context_len, docs, seed_file, depl
 
     for i, doc in enumerate(tqdm(docs)):
         prompt = prompt_formatting(generation_prompt, deployment_name, doc, 
-                                   seed_file, topics_list, context_len, verbose)     
+                                   seed_file, topics_list, context_len, verbose)    
         try: 
             response = api_call(prompt, deployment_name, temperature, max_tokens, top_p) 
+            print(f"호출된 deployment_name: {deployment_name}")
             topics = response.split("\n")
             for t in topics: 
                 t = t.strip()
@@ -122,7 +123,7 @@ def generate_topics(topics_root, topics_list, context_len, docs, seed_file, depl
 
 def main(): 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deployment_name", type=str, help="model to run topic generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
+    parser.add_argument("--deployment_name", type=str, default="gpt-4", help="model to run topic generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
     parser.add_argument("--max_tokens", type=int, default=500, help="max tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.0, help="temperature for generation")
     parser.add_argument("--top_p", type=float, default=0.0, help="top-p for generation")
@@ -146,6 +147,8 @@ def main():
     # Load data ---- 
     df = pd.read_json(str(args.data), lines=True)
     docs = df["text"].tolist()
+
+
     generation_prompt = open(args.prompt_file, "r").read()
     topics_root, topics_list = generate_tree(read_seed(args.seed_file))
 
