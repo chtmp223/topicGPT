@@ -139,7 +139,7 @@ def remove_topics(topics_root, verbose, threshold=0.01):
 
 def main(): 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deployment_name", type=str, help="model ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
+    parser.add_argument("--deployment_name", type=str, default="gpt-4", help="model ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
     parser.add_argument("--max_tokens", type=int, default=500, help="max tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.0, help="temperature")
     parser.add_argument("--top_p", type=float, default=0.0, help="top-p")
