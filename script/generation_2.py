@@ -125,12 +125,12 @@ def generate_topics(df, topics_root, topics_node, gen_prompt, context_len, deplo
 
 def main(): 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--deployment_name", type=str, help="model to run topic generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
+    parser.add_argument("--deployment_name", type=str, default="gpt-4", help="model to run topic generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)")
     parser.add_argument("--max_tokens", type=int, default=500, help="max tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.0, help="temperature for generation")
     parser.add_argument("--seed_file", type=str, default="data/output/generation_1.md", help="file to read seed from")
     parser.add_argument("--top_p", type=float, default=0.0, help="top-p for generation")
-    parser.add_argument("--data", type=str, default="data/input/generation_1.jsonl", help="data to run generation on")
+    parser.add_argument("--data", type=str, default="data/output/generation_1.jsonl", help="data to run generation on")
     parser.add_argument("--prompt_file", type=str, default="prompt/generation_2.txt", help="file to read prompts from")
     parser.add_argument("--out_file", type=str, default="data/output/generation_2.jsonl", help="file to write results to")
     parser.add_argument("--topic_file", type=str, default="data/output/generation_2.md", help="file to write topics to")
@@ -147,7 +147,9 @@ def main():
     context_len = context - max_tokens
     
     # Load data ---- 
+    print(f'args.data: {args.data}')
     df = pd.read_json(str(args.data), lines=True)
+
     generation_prompt = open(args.prompt_file, "r").read()
     topics_root, topics_node = generate_tree(read_seed(args.seed_file))
     topics_list = [f"[{node.lvl}] {node.name}" for node in topics_root.descendants]
