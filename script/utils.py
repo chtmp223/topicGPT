@@ -12,9 +12,11 @@ from itertools import islice
 import requests
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 from openai import OpenAI
+
+os.environ["OPENAI_API_KEY"] = "your OPENAI_API_KEY"
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 # Add perplexity API key to the environment variable & load it here. 
-PERPLEXITY_API_KEY = ""         
+#PERPLEXITY_API_KEY = ""
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
 
 
@@ -53,7 +55,7 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "authorization": PERPLEXITY_API_KEY
+            #"authorization": PERPLEXITY_API_KEY
         }
         response = requests.post("https://api.perplexity.ai/chat/completions", json=payload, headers=headers)
         if response.status_code != 200:
@@ -175,8 +177,9 @@ def read_seed(seed_file):
     topics = []
     pattern = regex.compile('^\[(\d+)\] ([\w\s]+) \(Count: (\d+)\): (.+)')
     hierarchy = open(seed_file, "r").readlines()
-    for res in hierarchy: 
+    for res in hierarchy:
         res = res.strip().split("\n")
+        print('res: ', res)
         for r in res: 
             r = r.strip()
             if regex.match(pattern, r) is not None:
