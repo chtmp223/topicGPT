@@ -189,9 +189,9 @@ def read_seed(seed_file):
 
 def tree_view(root): 
     '''
-    Format tree including count
-    - root: root node
-    Output: tree view in md 
+    개수를 포함한 형식 트리
+     - 루트: 루트 노드
+     출력: md의 트리 보기 
     '''
     tree_str = ''''''
     for _, _, node in RenderTree(root):
