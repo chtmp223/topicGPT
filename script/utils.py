@@ -218,10 +218,10 @@ def tree_prompt(root):
 
 def tree_addition(root, node_list, top_gen): 
     '''
-    For second level 
-    Step 1: Determine the level of the topic --> See if there is already a node with the same label at that level 
-    Step 2: If there is a duplicate, set the previous node to that duplicate. 
-    Step 3: If there is not a duplicate, add the topic to that level. 
+    두 번째 수준의 경우
+     1단계: 주제 수준 결정 --> 해당 수준에 동일한 라벨을 가진 노드가 이미 있는지 확인
+     2단계: 중복이 있는 경우 이전 노드를 해당 중복으로 설정합니다.
+     3단계: 중복된 항목이 없으면 해당 수준에 주제를 추가합니다.
     '''
     prev_node = root
     prev_lvl = 0 
