@@ -69,7 +69,7 @@ def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
 
 def get_ada_embedding(text, model="text-embedding-ada-002"): 
     '''
-    Get text embedding from openai API
+    openai API에서 텍스트 삽입 가져오기
     '''
     return client.embeddings.create(input=[text], engine=model)["data"][0]["embedding"]
 
