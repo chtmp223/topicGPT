@@ -13,7 +13,7 @@ import requests
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 from openai import OpenAI
 
-os.environ["OPENAI_API_KEY"] = "your OPENAI_API_KEY"
+os.environ["OPENAI_API_KEY"] = "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"
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 # Add perplexity API key to the environment variable & load it here. 
 #PERPLEXITY_API_KEY = ""
@@ -119,8 +119,8 @@ def truncating(document, max_tokens):
 #------------------------#
 def generate_tree(topic_list): 
     '''
-    Return topic tree representation & list of topics
-    - topic_list: list of topics read from topic file
+    주제 트리 표현 및 주제 목록 반환
+     - topic_list: 토픽 파일에서 읽어온 토픽 목록
     '''
     prev_lvl = 0 
     root = Node(name="Topics", parent=None, lvl=0, count=1)

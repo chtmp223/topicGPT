@@ -68,15 +68,16 @@ def prompt_formatting(generation_prompt, deployment_name, doc, seed_file, topics
 
 def generate_topics(topics_root, topics_list, context_len, docs, seed_file, deployment_name, generation_prompt, temperature, max_tokens, top_p, verbose, early_stop=100):
     '''
-    Generate topics from documents using LLMs
-    - topics_root, topics_list: Tree and list of topics generated from previous iteration
-    - context_len: Max length of prompt
-    - docs: List of documents to generate topics from
-    - seed_file: File to read seed topics from
-    - deployment_name: Model to run generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct)
-    - generation_prompt: Prompt to generate topics with
-    - verbose: Whether to print out results
-    - early_stop: Threshold for topic drought (Modify if necessary)
+    문서 및 시드 주제를 포함하도록 형식 프롬프트
+     프롬프트가 너무 긴 사례 처리
+     - Generation_prompt: 토픽 생성 프롬프트
+     - 배포_이름: 생성을 실행할 모델('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct')
+     - doc: 프롬프트에 포함할 문서
+     - Seed_file: 시드 주제를 읽을 파일
+     - topic_list: 이전 반복에서 생성된 주제 목록
+     - context_len: 모델의 최대 컨텍스트 길이(deployment_name)
+     - verbose: 결과를 출력할지 여부
+     - max_top_len: 프롬프트에 포함할 주제의 최대 길이(필요한 경우 수정)
     '''
     top_emb = {}
     responses = []
