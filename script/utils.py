@@ -269,8 +269,8 @@ def tree_addition(root, node_list, top_gen):
 
 def branch_to_str(root): 
     '''
-    Convert each tree branch to a string 
-    (each level is separated by a new line)
+    각 트리 분기를 문자열로 변환
+     (각 레벨은 새 줄로 구분됩니다)
     '''
     branch_list = []
     for _, _, node in RenderTree(root):
