@@ -203,8 +203,8 @@ def tree_view(root):
 
 def tree_prompt(root): 
     '''
-    Format tree to include in next prompt
-    - root: root node of the tree
+    다음 프롬프트에 포함할 형식 트리
+     - 루트: 트리의 루트 노드
     '''
     tree_str = ''''''
     num_top = 0 
