@@ -11,16 +11,16 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 def prompt_formatting(generation_prompt, deployment_name, doc, seed_file, topics_list, context_len, verbose, max_top_len=100): 
     '''
-    Format prompt to include document and seed topics
-    Handle cases where prompt is too long
-    - generation_prompt: Prompt for topic generation
-    - deployment_name: Model to run generation with ('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct')
-    - doc: Document to include in prompt
-    - seed_file: File to read seed topics from
-    - topics_list: List of topics generated from previous iteration
-    - context_len: Max context length for model (deployment_name)
-    - verbose: Whether to print out results
-    - max_top_len: Max length of topics to include in prompt (Modify if necessary)
+    문서 및 시드 주제를 포함하도록 형식 프롬프트
+     프롬프트가 너무 긴 사례 처리
+     - Generation_prompt: 토픽 생성 프롬프트
+     - 배포_이름: 생성을 실행할 모델('gpt-4', 'gpt-35-turbo', 'mistral-7b-instruct')
+     - doc: 프롬프트에 포함할 문서
+     - Seed_file: 시드 주제를 읽을 파일
+     - topic_list: 이전 반복에서 생성된 주제 목록
+     - context_len: 모델의 최대 컨텍스트 길이(deployment_name)
+     - verbose: 결과를 출력할지 여부
+     - max_top_len: 프롬프트에 포함할 주제의 최대 길이(필요한 경우 수정)
     '''
     sbert = SentenceTransformer('all-MiniLM-L6-v2')
     # Format seed topics to include manually written topics + previously generated topics
