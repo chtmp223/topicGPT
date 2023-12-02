@@ -22,12 +22,12 @@ client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 def api_call(prompt, deployment_name, temperature, max_tokens, top_p):
     '''
-    Call API (OpenAI, Azure, Perplexity) and return response
-    - prompt: prompt template
-    - deployment_name: name of the deployment to use (e.g. gpt-4, gpt-3.5-turbo, etc.)
-    - temperature: temperature parameter
-    - max_tokens: max tokens parameter
-    - top_p: top p parameter
+    API(OpenAI, Azure, Perplexity) 호출 및 응답 반환
+     - 프롬프트: 프롬프트 템플릿
+     - 배포 이름: 사용할 배포 이름(예: gpt-4, gpt-3.5-turbo 등)
+     - 온도: 온도 매개변수
+     - max_tokens: 최대 토큰 매개변수
+     - top_p: 상위 p 매개변수
     '''
     time.sleep(5)                           # Change to avoid rate limit
     if deployment_name in ["gpt-35-turbo", "gpt-4", "gpt-3.5-turbo"]:
