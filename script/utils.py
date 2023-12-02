@@ -172,7 +172,7 @@ def generate_tree(topic_list):
 
 def read_seed(seed_file): 
     '''
-    Construct topic list from seed file (.md format)
+    시드 파일(.md 형식)에서 주제 목록 구성
     '''
     topics = []
     pattern = regex.compile('^\[(\d+)\] ([\w\s]+) \(Count: (\d+)\): (.+)')
