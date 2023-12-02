@@ -75,9 +75,9 @@ def get_ada_embedding(text, model="text-embedding-ada-002"):
 
 def num_tokens_from_messages(messages, model):
     '''
-    Return the number of tokens used by a list of messages.
-    - messages: document/prompt, the length of which is to be calculated
-    - model: the model used to generate the messages
+    메시지 목록에 사용되는 토큰 수를 반환합니다.
+     - 메시지: 길이를 계산할 문서/프롬프트
+     - 모델: 메시지를 생성하는 데 사용되는 모델
     Source: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
     '''
     if model.startswith("gpt"):
