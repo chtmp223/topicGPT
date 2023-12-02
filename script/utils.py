@@ -105,7 +105,7 @@ def num_tokens_from_messages(messages, model):
 
 def truncating(document, max_tokens): 
     '''
-    Truncating the document down to contain only max_tokens
+    max_tokens만 포함하도록 문서 자르기
     '''
     encoding = tiktoken.get_encoding("cl100k_base")
     tokens = encoding.encode(document)
