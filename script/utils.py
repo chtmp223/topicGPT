@@ -105,7 +105,7 @@ def num_tokens_from_messages(messages, model):
 
 def truncating(document, max_tokens): 
     '''
-    Truncating the document down to contain only max_tokens
+    max_tokens만 포함하도록 문서 자르기
     '''
     encoding = tiktoken.get_encoding("cl100k_base")
     tokens = encoding.encode(document)
@@ -191,7 +191,7 @@ def tree_view(root):
     '''
     개수를 포함한 형식 트리
      - 루트: 루트 노드
-     출력: md의 트리 보기 
+     출력: md의 트리 보기
     '''
     tree_str = ''''''
     for _, _, node in RenderTree(root):
@@ -203,8 +203,8 @@ def tree_view(root):
 
 def tree_prompt(root): 
     '''
-    Format tree to include in next prompt
-    - root: root node of the tree
+    다음 프롬프트에 포함할 형식 트리
+     - 루트: 트리의 루트 노드
     '''
     tree_str = ''''''
     num_top = 0 
@@ -218,10 +218,10 @@ def tree_prompt(root):
 
 def tree_addition(root, node_list, top_gen): 
     '''
-    For second level 
-    Step 1: Determine the level of the topic --> See if there is already a node with the same label at that level 
-    Step 2: If there is a duplicate, set the previous node to that duplicate. 
-    Step 3: If there is not a duplicate, add the topic to that level. 
+    두 번째 수준의 경우
+     1단계: 주제 수준 결정 --> 해당 수준에 동일한 라벨을 가진 노드가 이미 있는지 확인
+     2단계: 중복이 있는 경우 이전 노드를 해당 중복으로 설정합니다.
+     3단계: 중복된 항목이 없으면 해당 수준에 주제를 추가합니다.
     '''
     prev_node = root
     prev_lvl = 0 
