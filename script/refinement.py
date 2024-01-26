@@ -250,7 +250,7 @@ def main():
         "--refined_again",
         type=str,
         default="refiner",
-        help="Is this the second time refining?",
+        help="Is this the second time you run refinement on the topics?",
     )
 
     args = parser.parse_args()
@@ -287,7 +287,7 @@ def main():
 
     if len(responses) > 0:
         # Writing updated topics ----
-        with open(args.topic_file, "w") as f:
+        with open(args.out_file, "w") as f:
             print(tree_view(updated_topics_root), file=f)
 
         # Writing orig-new mapping ----
@@ -323,6 +323,8 @@ def main():
             updated_responses.append("\n".join(sub_list))
         df["refined_responses"] = updated_responses
         df.to_json(args.updated_file, lines=True, orient="records")
+    else: 
+        print("No updated/merged topics!")
 
 
 if __name__ == "__main__":

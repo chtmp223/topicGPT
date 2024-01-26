@@ -4,8 +4,8 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
 ![TopicGPT Pipeline Overview](pipeline.png)
 
 ## Updates
-- [02/18/23] Second-level topic generation code and refinement code are uploaded.
-- [02/11/23] Basic pipeline is uploaded. Refinement and second-level topic generation code are coming soon.
+- [11/18/23] Second-level topic generation code and refinement code are uploaded.
+- [11/11/23] Basic pipeline is uploaded. Refinement and second-level topic generation code are coming soon.
 
 ## Setup
 - Install the requirements: `pip install -r requirements.txt`
@@ -98,4 +98,3 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
       primaryClass={cs.CL}
 }
 ```
-
