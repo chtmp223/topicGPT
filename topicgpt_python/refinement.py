@@ -174,7 +174,6 @@ def update_generation_file(
     updated_file,
     mapping,
     verbose=False,
-    refined_again=False,
     mapping_file=None,
 ):
     """
@@ -185,7 +184,6 @@ def update_generation_file(
     - updated_file (str): Path to save the updated JSON file.
     - mapping (dict): Dictionary mapping original topics to new topics.
     - verbose (bool): If True, prints each replacement made.
-    - refined_again (bool): If True, indicates refined responses are being updated again.
     - mapping_file (str): Path to save the mapping as a JSON file.
 
     Returns:
@@ -243,7 +241,6 @@ def refine_topics(
     verbose,
     remove,
     mapping_file,
-    refined_again,
 ):
     """
     Main function to refine topics by merging and updating based on API response.
@@ -259,7 +256,6 @@ def refine_topics(
     - verbose (bool): If True, prints each replacement made.
     - remove (bool): If True, removes low-frequency topics.
     - mapping_file (str): Path to save the mapping as a JSON file.
-    - refined_again (bool): If True, indicates refined responses are being updated again.
 
     Returns:
     - None
@@ -300,7 +296,7 @@ def refine_topics(
         updated_topics_root = remove_topics(updated_topics_root, verbose)
 
     update_generation_file(
-        generation_file, updated_file, mapping, verbose, refined_again, mapping_file
+        generation_file, updated_file, mapping, verbose, mapping_file
     )
 
     updated_topics_root.to_file(out_file)
@@ -327,7 +323,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mapping_file", type=str, default="data/output/refiner_mapping.json"
     )
-    parser.add_argument("--refined_again", type=str, default="refiner")
 
     args = parser.parse_args()
     refine_topics(
@@ -340,6 +335,5 @@ if __name__ == "__main__":
         args.updated_file,
         args.verbose,
         args.remove,
-        args.mapping_file,
-        args.refined_again,
+        args.mapping_file
     )

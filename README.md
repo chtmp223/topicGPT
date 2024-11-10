@@ -86,8 +86,7 @@ Check out `demo.ipynb` for a complete pipeline and more detailed instructions. W
                     config['refinement']['output'],
                     verbose=config['verbose'],
                     remove=config['refinement']['remove'], 
-                    mapping_file=config['refinement']['mapping_file'],
-                    refined_again=False,)       #TODO: change to True if you want to refine the topics again
+                    mapping_file=config['refinement']['mapping_file'])       #TODO: change to True if you want to refine the topics again
     ```
 5. Assign and correct the topics, usually with a weaker model if using paid APIs to save cost:
     ```python

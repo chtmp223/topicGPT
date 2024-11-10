@@ -20,7 +20,6 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="assets/styles/main.css" />
-    <link rel="icon" href="assets/img/avatartion.png" type="image/x-icon" />
     <link
       rel="shortcut icon"
       href="assets/img/avatartion.png"
@@ -187,7 +186,25 @@
     >
       <div class="row">
         <p class="tlr">
-          1. Prepare your <code>.jsonl</code> data file in the following format:
+          You can download the raw datasets used in the paper (Bills and
+          Wiki) from the following link:
+          <a
+            class="link-body"
+            href="https://drive.google.com/drive/folders/1rCTR5ZQQ7bZQoewFA8eqV6glP6zhY31e?usp=sharing"
+            target="_blank"
+            >Dataset Link</a
+          >.
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+      <div class="row">
+        <p class="tlr">
+          Otherwise, prepare your <code>.jsonl</code> input data file with the following format: 
         </p>
       </div>
     </div>
@@ -204,36 +221,14 @@
       <div class="code-block">
         <pre><code>
   {
-      "id": "IDs (optional)",
-      "text": "Documents",
-      "label": "Ground-truth labels (optional)"
+      "id": "ID (optional)",
+      "text": "Document",
+      "label": "Ground-truth label (optional)"
   }
       </code></pre>
       </div>
-    </div>
+    </div><br>
 
-    <div
-      class="container"
-      style="max-width: 75%; margin: 0 auto; text-align: justify"
-    >
-      <div class="row">
-        <p class="tlr">
-          2. Place your data file in the <code>data/input</code> directory. A
-          sample data file, <code>data/input/sample.jsonl</code>, is provided to
-          help you debug the code.
-        </p>
-        <p class="tlr">
-          3. You can download the raw datasets used in the paper (Bills and
-          Wiki) from the following link:
-          <a
-            class="link-body"
-            href="https://drive.google.com/drive/folders/1rCTR5ZQQ7bZQoewFA8eqV6glP6zhY31e?usp=sharing"
-            target="_blank"
-            >Dataset Link</a
-          >.
-        </p>
-      </div>
-    </div>
     <hr />
 
     <div class="container" style="text-align: center">
@@ -247,7 +242,7 @@
     >
       <div class="row">
         <p class="tlr">
-          Check out <code>demo.ipynb</code> for a complete pipeline and more
+          Check out <a href="https://github.com/chtmp223/topicGPT/blob/main/demo.ipynb" target="_blank" class="link-body">demo.ipynb</a> for a complete pipeline and more
           detailed instructions. We advise trying a subset with more affordable
           (or open-source) models before scaling to the full dataset.
         </p>
@@ -300,19 +295,19 @@
   export VERTEX_LOCATION={your_vertex_location}
       </code></pre>
       </div>
-    </div>
+    </div><br>
     <div
       class="container"
       style="max-width: 75%; margin: 0 auto; text-align: justify"
     >
       <div class="row">
         <p class="tlr">
-          4. Define I/O paths in <code>config.yml</code>.
+          4. (Optional) Define I/O paths in <code>config.yml</code>.
         </p>
       </div>
       <div class="row">
         <p class="tlr">
-          5. Run the following code snippet to load the configuration file:
+          5. (Optional) Run the following code snippet to load the configuration file:
         </p>
       </div>  
     </div>
@@ -344,8 +339,8 @@
     </div>
     <div class="container" style="max-width: 80%; margin: 0 auto; text-align: justify;">
       <ul>
-        <li>Define your seed topics in `prompt/seed_1.md`.</li>
-        <li>(Optional) Modify few-shot examples in `prompt/generation_1.txt`.</li>
+        <li>Define your seed topics, like in <a href="https://github.com/chtmp223/topicGPT/blob/main/prompt/seed_1.md" class="link-body" target="_blank">seed_1.md</a>.</li>
+        <li>(Optional) Define few-shot examples, like in <a href="https://github.com/chtmp223/topicGPT/blob/main/prompt/generation_1.txt" class="link-body" target="_blank">generation_1.txt</a>.</li>
         <li>Right now, early stopping is set to 100, meaning that if no new topic has been generated in the last 100 iterations, the generation process will stop.</li>
       </ul>
     </div>
@@ -388,7 +383,7 @@
   )                
       </code></pre>
       </div>
-    </div>
+    </div><br>
 
     <div
       class="container"
@@ -449,7 +444,6 @@
       <ul>
         <li>Merges similar topics</li>
         <li>Removes overly specific or redundant topics that occur < 1% of the time</li>
-        <li>If you're unsatisfied with the refined topics, call the function again and set <code>refined_again</code> to True in the function call. </li>
       </ul>
     </div>
 
@@ -475,9 +469,9 @@
         <li><strong>prompt_file</strong> (str): Path to the refinement prompt file</li>
         <li>
           <strong>generation_file</strong> (str): Path to the generation JSON
-          file (obtained from the topic generation stage)
+          file (obtained from the topic generation stage/from the previous refinement iteration)
         </li>
-        <li><strong>topic_file</strong> (str): Path to the topic file (obtained from the topic generation stage)
+        <li><strong>topic_file</strong> (str): Path to the topic file (obtained from the topic generation stage/from the previous refinement iteration)
         </li>
         <li>
           <strong>out_file</strong> (str): Path to save the refined topic file
@@ -496,9 +490,6 @@
           <strong>mapping_file</strong> (str): Path to save the mapping as a
           JSON file
         </li>
-        <li>
-          <strong>refined_again</strong> (bool): If True, indicates if refinement is applied again.
-        </li>
       </ul>
     </div>
 
@@ -514,7 +505,7 @@
       <div class="code-block">
         <pre><code>
   refine_topics(
-    api, model, prompt_file, generation_file, topic_file, out_file, updated_file, verbose, remove, mapping_file, refined_again 
+    api, model, prompt_file, generation_file, topic_file, out_file, updated_file, verbose, remove, mapping_file
   )
       </code></pre>
       </div>
@@ -560,7 +551,7 @@
         <li><strong>data</strong> (str): Data file</li>
         <li><strong>prompt_file</strong> (str): Prompt file</li>
         <li><strong>out_file</strong> (str): Output file</li>
-        <li><strong>topic_file</strong> (str): File to write topics to</li>
+        <li><strong>topic_file</strong> (str): File containing topic list (obtained from the generation/refinement stage)</li>
         <li><strong>verbose</strong> (bool): Whether to print out results</li>
       </ul>
     </div>
@@ -594,16 +585,16 @@
       "
     >
       <b>Function: correct_topics</b>
-      <p>Main function to parse, correct, and save topic assignments.</p>
+      <p>Correct hallucinated topic assignments or errors.</p>
       <ul>
         <li>
           <strong>api</strong>: API type (e.g., 'openai', 'vertex', 'vllm')
         </li>
         <li><strong>model</strong>: Model name (e.g., 'gpt-4')</li>
-        <li><strong>data_path</strong>: Path to data file</li>
-        <li><strong>prompt_path</strong>: Path to prompt file</li>
-        <li><strong>topic_path</strong>: Path to topic file</li>
-        <li><strong>output_path</strong>: Path to save corrected output</li>
+        <li><strong>data_path</strong>: Input data file (should be the output file from the assignment stage)</li>
+        <li><strong>prompt_path</strong>: File to read prompt from</li>
+        <li><strong>topic_path</strong>: File containing topic list (obtained from the generation/refinement stage)</li>
+        <li><strong>output_path</strong>: Output file</li>
         <li><strong>verbose</strong>: Print verbose output</li>
       </ul>
     </div>
