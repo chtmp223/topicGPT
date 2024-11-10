@@ -8,7 +8,7 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
 - `assign_topics` assigns the generated topics to the input text, along with a quote that supports the assignment.
 - `correct_topics` corrects the generated topics by reprompting the model so that the final topic assignment is grounded in the topic list. 
 
-![TopicGPT Pipeline Overview](assets/pipeline.png)
+![TopicGPT Pipeline Overview](assets/img/pipeline.png)
 
 ## 📣 Updates
 - [11/09/24] Python package `topicgpt_python` is released! You can install it via `pip install topicgpt_python`. We support OpenAI API, Vertex AI, and vLLM (requires GPUs for inference). See [PyPI](https://pypi.org/project/topicgpt-python/).

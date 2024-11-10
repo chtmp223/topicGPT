@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="google-site-verification"
+      content="tCsJJWn2zQXxNRhhVU8PobNOXvc7wxoOyZmEUCI0pk"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="assets/styles/main.css" />
+    <link rel="icon" href="assets/img/avatartion.png" type="image/x-icon" />
+    <link
+      rel="shortcut icon"
+      href="assets/img/avatartion.png"
+      type="image/x-icon"
+    />
+    <style>
+      .nord-dark-mode .bib {
+        color: white;
+      }
+      .reference-div {
+        border: 1px dashed whitesmoke;
+      }
+    </style>
+    <script>
+      function applySystemDefaultMode() {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          document.body.classList.add("nord-dark-mode");
+        }
+      }
+
+      window.onload = applySystemDefaultMode;
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <title>TopicGPT (NAACL'24)</title>
+  </head>
+
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-V0ZY4Q1942"
+  ></script>
+  <script>
+    // Google tag
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "G-V0ZY4Q1942");
+  </script>
+
+  <body>
+    <div style="text-align: center">
+      <h1>TopicGPT: A Prompt-based Topic Modeling Framework</h1>
+      <a class="link-body" href="https://chtmp223.github.io/" onclick="_blank"
+        >Chau Minh Pham🔍</a
+      >,
+      <a class="link-body" href="https://alexanderhoyle.com" onclick="_blank"
+        >Alexander Hoyle🔦</a
+      >,
+      <a class="link-body" href="https://simengsun.github.io" onclick="_blank"
+        >Simeng Sun🔍<sup></sup></a
+      >, <br />
+      <a
+        class="link-body"
+        href="http://users.umiacs.umd.edu/~resnik/"
+        onclick="_blank"
+        >Philip Resnik🔦</a
+      >,
+      <a
+        class="link-body"
+        href="https://people.cs.umass.edu/~miyyer/"
+        onclick="_blank"
+        >Mohit Iyyer🔍</a
+      >
+      <br />
+      🔍University of Massachusetts Amherst<br />
+      🔦University of Maryland College Park<br />
+      <a
+        class="link-body"
+        href="https://arxiv.org/abs/2311.01449"
+        target="_blank"
+        >[Paper]</a
+      >
+      <a
+        class="link-body"
+        href="https://github.com/chtmp223/topicGPT"
+        target="_blank"
+        >[Code]</a
+      >
+      [<svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        class="bi bi-moon-stars-fill dark-mode-toggle responsive-icon"
+        viewBox="0 0 16 16"
+        id="darkModeToggle"
+      >
+        <path
+          d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"
+        />
+        <path
+          d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z"
+        /></svg
+      >]
+      <script>
+        const toggleButton = document.getElementById("darkModeToggle");
+        toggleButton.addEventListener("click", () => {
+          document.body.classList.toggle("nord-dark-mode");
+        });
+      </script>
+    </div>
+
+    <hr />
+
+    <div style="text-align: center">
+      <img
+        class="responsive-header"
+        style="padding-top: 10px; height: auto; max-width: 80%"
+        src="assets/img/pipeline.png"
+      />
+    </div>
+
+    <br />
+    <div class="container" style="text-align: center">
+      <h2 class="title">TLDR;</h2>
+      <br />
+    </div>
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+      <div class="row">
+        <p class="tlr">
+          1. We introduce <b>TopicGPT</b>, a prompt-based framework that uses large
+          language models (LLMs) to uncover latent topics in a text collection.
+          TopicGPT generates interpretable topics, dispensing with ambiguous
+          bags of words in favor of topics with natural language labels and
+          associated free-form descriptions.
+        </p>
+        <p class="tlr">
+          2. TopicGPT works in three main stages. 
+          <ul>
+            <li>Generation: It generates high-level topics using a prompt-based approach.</li>
+            <li>Refinement: It refines the topics by merging similar ones and removing outliers.</li>
+            <li>Assignment: It assigns topics to documents with supporting quotes.</li>
+          </ul>
+        </p>
+        <p class="tlr">
+          3. TopicGPT produces topics that align better with human
+          categorizations compared to competing methods: it achieves a harmonic
+          mean purity of 0.74 against human-annotated Wikipedia topics compared
+          to 0.64 for the strongest baseline.
+        </p>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="container" style="text-align: center">
+      <h2 class="title">Data Preparation</h2>
+      <br />
+    </div>
+
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+      <div class="row">
+        <p class="tlr">
+          1. Prepare your <code>.jsonl</code> data file in the following format:
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  {
+      "id": "IDs (optional)",
+      "text": "Documents",
+      "label": "Ground-truth labels (optional)"
+  }
+      </code></pre>
+      </div>
+    </div>
+
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+      <div class="row">
+        <p class="tlr">
+          2. Place your data file in the <code>data/input</code> directory. A
+          sample data file, <code>data/input/sample.jsonl</code>, is provided to
+          help you debug the code.
+        </p>
+        <p class="tlr">
+          3. You can download the raw datasets used in the paper (Bills and
+          Wiki) from the following link:
+          <a
+            class="link-body"
+            href="https://drive.google.com/drive/folders/1rCTR5ZQQ7bZQoewFA8eqV6glP6zhY31e?usp=sharing"
+            target="_blank"
+            >Dataset Link</a
+          >.
+        </p>
+      </div>
+    </div>
+    <hr />
+
+    <div class="container" style="text-align: center">
+      <h2 class="title">Setting up</h2>
+      <br />
+    </div>
+
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+      <div class="row">
+        <p class="tlr">
+          Check out <code>demo.ipynb</code> for a complete pipeline and more
+          detailed instructions. We advise trying a subset with more affordable
+          (or open-source) models before scaling to the full dataset.
+        </p>
+        <p class="tlr">
+          Metric calculation functions are available in
+            <code>topicgpt_python.metrics</code> to evaluate topic alignment
+            with ground-truth labels (Adjusted Rand Index, Harmonic Purity,
+            Normalized Mutual Information).
+        <p class="tlr">
+          Our package supports OpenAI API, Google Cloud Vertex AI API, and vLLM
+          inference. vLLM requires GPUs to run. Please refer to
+          <a
+            class="link-body"
+            href="https://openai.com/pricing/"
+            target="_blank"
+            >OpenAI API pricing</a
+          >
+          or to
+          <a
+            class="link-body"
+            href="https://cloud.google.com/vertex-ai/pricing"
+            target="_blank"
+            >Vertex API pricing</a
+          >
+          for cost details.
+        </p>
+        <p class="tlr">
+          1. Make a new Python 3.9+ environment using virtualenv or conda.
+        </p>
+        <p class="tlr">
+          2. Install the required packages:
+          <code>pip install --upgrade topicgpt_python</code>
+        </p>
+        <p class="tlr">3. Set environment variables:</p>
+      </div>
+    </div>
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  export OPENAI_API_KEY={your_openai_api_key}
+  export VERTEX_PROJECT={your_vertex_project}
+  export VERTEX_LOCATION={your_vertex_location}
+      </code></pre>
+      </div>
+    </div>
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+      <div class="row">
+        <p class="tlr">
+          4. Define I/O paths in <code>config.yml</code>.
+        </p>
+      </div>
+      <div class="row">
+        <p class="tlr">
+          5. Run the following code snippet to load the configuration file:
+        </p>
+      </div>  
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  from topicgpt_python import *
+  import yaml
+  
+  with open("config.yml", "r") as f:
+      config = yaml.safe_load(f)
+      </code></pre>
+      </div>
+    </div>
+    <hr />
+
+    <div class="container" style="text-align: center">
+      <h2 class="title">Generating Topics</h2>
+      <br />
+    </div>
+    <div class="container" style="max-width: 80%; margin: 0 auto; text-align: justify;">
+      <ul>
+        <li>Define your seed topics in `prompt/seed_1.md`.</li>
+        <li>(Optional) Modify few-shot examples in `prompt/generation_1.txt`.</li>
+        <li>Right now, early stopping is set to 100, meaning that if no new topic has been generated in the last 100 iterations, the generation process will stop.</li>
+      </ul>
+    </div>
+    <div
+      class="container"
+      style="max-width: 75%; margin: 0 auto; text-align: justify"
+    >
+  <b>Function: generate_topic_lvl1</b>
+  <p>Generate high-level topics.</p>
+  <ul>
+    <li>
+      <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')
+    </li>
+    <li><strong>model</strong> (str): Model to run topic generation with</li>
+    <li><strong>data</strong> (str): Input data file</li>
+    <li><strong>prompt_file</strong> (str): File to read prompt from</li>
+    <li>
+      <strong>seed_file</strong> (str): Markdown file to read seed topics
+      from
+    </li>
+    <li><strong>out_file</strong> (str): File to write results (original texts with the corresponding generated topics) to</li>
+    <li><strong>topic_file</strong> (str): File to write generated topics to</li>
+    <li><strong>verbose</strong> (bool): Enable verbose output</li>
+  </ul>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  generate_topic_lvl1(
+    api, model, data, prompt_file, seed_file, out_file, topic_file, verbose
+  )                
+      </code></pre>
+      </div>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: justify;
+        padding-left: 15px;
+      "
+    >
+      <b>Function: generate_topic_lvl2</b>
+      <p>Generate subtopics for each top-level topic.</p>
+      <ul>
+        <li><strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')</li>
+        <li><strong>model</strong> (str): Model to run topic generation with</li>
+        <li><strong>seed_file</strong> (str): File to read seed topics from</li>
+        <li><strong>data</strong> (str): Input data file</li>
+        <li><strong>prompt_file</strong> (str): Prompt file</li>
+        <li><strong>out_file</strong> (str): Output result file (original texts with corresponding generated topics)</li>
+        <li><strong>topic_file</strong> (str): Output topics file</li>
+        <li><strong>verbose</strong> (bool): Enable verbose output</li>
+      </ul>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  generate_topic_lvl2(
+    api, model, seed_file, data, prompt_file, out_file, topic_file, verbose
+  )
+      </code></pre>
+      </div>
+    </div>
+    <hr>
+
+    <div class="container" style="text-align: center">
+      <h2 class="title">Refining Topics</h2>
+      <br />
+    </div>
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: justify;
+        padding-left: 15px;
+      "
+    >
+    If topics are generated by a weaker model, there sometimes exist irrelevant or redundant topics. This module: 
+      <ul>
+        <li>Merges similar topics</li>
+        <li>Removes overly specific or redundant topics that occur < 1% of the time</li>
+        <li>If you're unsatisfied with the refined topics, call the function again and set <code>refined_again</code> to True in the function call. </li>
+      </ul>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: justify;
+        padding-left: 15px;
+      "
+    >
+      <b>Function: refine_topics</b>
+      <p>
+        Refine topics by merging and updating based on API
+        response.
+      </p>
+      <ul>
+        <li>
+          <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')
+        </li>
+        <li><strong>model</strong> (str): Model to run topic refinement with</li>
+        <li><strong>prompt_file</strong> (str): Path to the refinement prompt file</li>
+        <li>
+          <strong>generation_file</strong> (str): Path to the generation JSON
+          file (obtained from the topic generation stage)
+        </li>
+        <li><strong>topic_file</strong> (str): Path to the topic file (obtained from the topic generation stage)
+        </li>
+        <li>
+          <strong>out_file</strong> (str): Path to save the refined topic file
+        </li>
+        <li>
+          <strong>updated_file</strong> (str): Path to save the updated
+          generation JSON file
+        </li>
+        <li>
+          <strong>verbose</strong> (bool): If True, prints out implemntation details
+        </li>
+        <li>
+          <strong>remove</strong> (bool): If True, removes low-frequency topics (< 1% occurence times)
+        </li>
+        <li>
+          <strong>mapping_file</strong> (str): Path to save the mapping as a
+          JSON file
+        </li>
+        <li>
+          <strong>refined_again</strong> (bool): If True, indicates if refinement is applied again.
+        </li>
+      </ul>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  refine_topics(
+    api, model, prompt_file, generation_file, topic_file, out_file, updated_file, verbose, remove, mapping_file, refined_again 
+  )
+      </code></pre>
+      </div>
+    </div><hr>
+
+    <div class="container" style="text-align: center">
+      <h2 class="title">Assigning Topics</h2>
+      <br />
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 80%;
+        margin: 0 auto;
+        text-align: justify;
+        padding-left: 15px;
+      "
+    >
+    <ul>
+      <li>Each assignment is supported by a quote from the input text.</li>
+      <li>The model used here is often a weaker model to save cost, so the topics may not be grounded in the topic list. To correct this, apply the <code>correct_topics</code> module until there are no more hallucinations.</li>
+    </ul>
+    </div>
+
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: justify;
+        padding-left: 15px;
+      "
+    >
+      <b>Function: assign_topics</b>
+      <p>Assign topics to a list of documents.</p>
+      <ul>
+        <li>
+          <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')
+        </li>
+        <li><strong>model</strong> (str): Model to use</li>
+        <li><strong>data</strong> (str): Data file</li>
+        <li><strong>prompt_file</strong> (str): Prompt file</li>
+        <li><strong>out_file</strong> (str): Output file</li>
+        <li><strong>topic_file</strong> (str): File to write topics to</li>
+        <li><strong>verbose</strong> (bool): Whether to print out results</li>
+      </ul>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  assign_topics(
+    api, model, data, prompt_file, out_file, topic_file, verbose
+  )
+      </code></pre>
+      </div>
+    </div>
+    <br />
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: justify;
+        padding-left: 15px;
+      "
+    >
+      <b>Function: correct_topics</b>
+      <p>Main function to parse, correct, and save topic assignments.</p>
+      <ul>
+        <li>
+          <strong>api</strong>: API type (e.g., 'openai', 'vertex', 'vllm')
+        </li>
+        <li><strong>model</strong>: Model name (e.g., 'gpt-4')</li>
+        <li><strong>data_path</strong>: Path to data file</li>
+        <li><strong>prompt_path</strong>: Path to prompt file</li>
+        <li><strong>topic_path</strong>: Path to topic file</li>
+        <li><strong>output_path</strong>: Path to save corrected output</li>
+        <li><strong>verbose</strong>: Print verbose output</li>
+      </ul>
+    </div>
+
+    <div
+      class="container"
+      style="
+        max-width: 75%;
+        margin: 0 auto;
+        text-align: left;
+        background-color: #f7f7f7;
+      "
+    >
+      <div class="code-block">
+        <pre><code>
+  correct_topics(
+    api, model, data_path, prompt_path, topic_path, output_path, verbose
+  ) 
+      </code></pre>
+      </div>
+    </div>
+    <hr />
+    <div class="container" style="text-align: center">
+      <h2 class="title">Citation</h2>
+      <br />
+    </div>
+
+    <div
+      class="reference-div"
+      style="border: 1px dashed; padding: 20px; margin: 20px 20px"
+    >
+      <pre
+        style="
+          font-size: smaller;
+          font-family: &quot;Menlo&quot;, Menlo, monospace;
+          white-space: pre-wrap;
+          text-align: left;
+        "
+        class="bib"
+      >
+      @misc{pham2024topicgptpromptbasedtopicmodeling,
+        title={TopicGPT: A Prompt-based Topic Modeling Framework}, 
+        author={Chau Minh Pham and Alexander Hoyle and Simeng Sun and Philip Resnik and Mohit Iyyer},
+        year={2024},
+        eprint={2311.01449},
+        archivePrefix={arXiv},
+        primaryClass={cs.CL},
+        url={https://arxiv.org/abs/2311.01449}, 
+      }</pre>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

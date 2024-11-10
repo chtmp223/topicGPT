@@ -6,12 +6,12 @@ with open("requirements.txt") as f:
 with open("README.md", "r") as fh:
     long_description = fh.read()
     long_description = long_description.replace(
-        "![TopicGPT Pipeline Overview](pipeline.png)", ""
+        "![TopicGPT Pipeline Overview](assets/img/pipeline.png)", ""
     )
 
 setup(
     name="topicgpt_python",
-    version="0.2.0",
+    version="0.2.1",
     packages=find_packages(),
     install_requires=requirements,
     author="Chau Minh Pham",

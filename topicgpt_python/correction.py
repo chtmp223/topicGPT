@@ -186,7 +186,18 @@ def correct_batch(
 def correct_topics(
     api, model, data_path, prompt_path, topic_path, output_path, verbose=False
 ):
-    """Main function to parse, correct, and save topic assignments."""
+    """
+    Main function to parse, correct, and save topic assignments.
+
+    Parameters:
+    - api: API type (e.g., 'openai', 'vertex', 'vllm')
+    - model: Model name (e.g., 'gpt-4')
+    - data_path: Path to data file
+    - prompt_path: Path to prompt file
+    - topic_path: Path to topic file
+    - output_path: Path to save corrected output
+    - verbose: Print verbose output
+    """
     api_client = APIClient(api=api, model=model)
     max_tokens, temperature, top_p = 1000, 0.0, 1.0
     context_len = (

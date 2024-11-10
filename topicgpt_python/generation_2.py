@@ -250,6 +250,8 @@ def generate_topic_lvl2(
     - out_file: Output result file
     - topic_file: Output topics file
     - verbose: Enable verbose output
+
+    Returns: Root node of the topic tree
     """
     api_client = APIClient(api=api, model=model)
     max_tokens, temperature, top_p = 1000, 0.0, 1.0
@@ -295,6 +297,7 @@ def generate_topic_lvl2(
     pd.DataFrame({"text": docs, "topics": res}).to_json(
         out_file, orient="records", lines=True
     )
+    return topics_root
 
 
 if __name__ == "__main__":
