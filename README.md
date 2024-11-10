@@ -1,93 +1,116 @@
 # TopicGPT
-This repository contains scripts and prompts for our paper ["TopicGPT: Topic Modeling by Prompting Large Language Models"](https://arxiv.org/abs/2311.01449). 
+[![arXiV](https://img.shields.io/badge/arxiv-link-red)](https://arxiv.org/abs/2311.01449) [![Website](https://img.shields.io/badge/website-link-purple)](https://chtmp223.github.io/topicGPT) 
 
-![TopicGPT Pipeline Overview](pipeline.png)
+This repository contains scripts and prompts for our paper ["TopicGPT: Topic Modeling by Prompting Large Language Models"](https://arxiv.org/abs/2311.01449) (NAACL'24). Our `topicgpt_python` package consists of five main functions: 
+- `generate_topic_lvl1` generates high-level and generalizable topics. 
+- `generate_topic_lvl2` generates low-level and specific topics to each high-level topic.
+- `refine_topics` refines the generated topics by merging similar topics and removing irrelevant topics.
+- `assign_topics` assigns the generated topics to the input text, along with a quote that supports the assignment.
+- `correct_topics` corrects the generated topics by reprompting the model so that the final topic assignment is grounded in the topic list. 
 
-## Updates
+![TopicGPT Pipeline Overview](assets/pipeline.png)
+
+## 📣 Updates
+- [11/09/24] Python package `topicgpt_python` is released! You can install it via `pip install topicgpt_python`. We support OpenAI API, Vertex AI, and vLLM (requires GPUs for inference). See [PyPI](https://pypi.org/project/topicgpt-python/).
 - [11/18/23] Second-level topic generation code and refinement code are uploaded.
 - [11/11/23] Basic pipeline is uploaded. Refinement and second-level topic generation code are coming soon.
 
-## Setup
-- Install the requirements: `pip install -r requirements.txt`
-- Set your OpenAI key according to [this article](https://help.openai.com/en/articles/5112595-best-practices-for-api-key-safety).
-- Refer to https://openai.com/pricing/ for OpenAI API pricing or to https://blog.perplexity.ai/blog/introducing-pplx-api for Perplexity API pricing.
-
-## Data
-- Prepare your `.jsonl` data file in the following format:
+## 📦 Using TopicGPT
+### Getting Started
+1. Make a new Python 3.9+ environment using virtualenv or conda. 
+2. Install the required packages:
     ```
+    pip install topicgpt_python
+    ```
+- Set your API key:
+    ```
+    export OPENAI_API_KEY={your_openai_api_key}
+    export VERTEX_PROJECT={your_vertex_project}
+    export VERTEX_LOCATION={your_vertex_location}
+    ```
+- Refer to https://openai.com/pricing/ for OpenAI API pricing or to https://cloud.google.com/vertex-ai/pricing for Vertex API pricing. 
+
+### Data
+- Prepare your `.jsonl` data file in the following format:
+    ```shell
     {
-        "id": "Optional IDs",
+        "id": "IDs (optional)",
         "text": "Documents",
-        "label": "Optional ground-truth labels"
+        "label": "Ground-truth labels (optional)"
     }
     ```
-- Put the data file in `data/input`. There is also a sample data file `data/input/sample.jsonl` to debug the code.
-- If you want to sample a subset of the data for topic generation, run `python script/data.py --data <data_file> --num_samples 1000 --output <output_file>`. This will sample 1000 documents from the data file and save it to `<output_file>`. You can also specify `--num_samples` to sample a different number of documents, see the paper for more detail.
-- Raw dataset: [[link]](https://drive.google.com/drive/folders/1rCTR5ZQQ7bZQoewFA8eqV6glP6zhY31e?usp=sharing). 
+- Put your data file in `data/input`. There is also a sample data file `data/input/sample.jsonl` to debug the code.
+- Raw dataset used in the paper (Bills and Wiki): [[link]](https://drive.google.com/drive/folders/1rCTR5ZQQ7bZQoewFA8eqV6glP6zhY31e?usp=sharing). 
 
-## Pipeline
-- You can either run `script/run.sh` to run the entire pipeline or run each step individually. See the notebook in `script/example.ipynb` for a step-by-step guide.
-- Topic generation: Modify the prompts according to the templates in `templates/generation_1.txt` and `templates/seed_1.md`. Then, to run topic generation, do: 
+### Pipeline
+Check out `demo.ipynb` for a complete pipeline and more detailed instructions. We advise you to try running on a subset with cheaper (or open-source) models first before scaling up to the entire dataset. 
+
+0. Define I/O paths in `config.yml`. 
+1. Load the package and config file:
+    ```python
+    from topicgpt_python import *
+    import yaml
+
+    with open("config.yml", "r") as f:
+        config = yaml.safe_load(f)
     ```
-    python3 script/generation_1.py --deployment_name gpt-4 \
-                            --max_tokens 300 --temperature 0.0 --top_p 0.0 \
-                            --data data/input/sample.jsonl \
-                            --prompt_file prompt/generation_1.txt \
-                            --seed_file prompt/seed_1.md \
-                            --out_file data/output/generation_1.jsonl \
-                            --topic_file data/output/generation_1.md \
-                            --verbose True
+2. Generate high-level topics:
+    ```python
+    generate_topic_lvl1(api, model, 
+                    config['data_sample'], 
+                    config['generation']['prompt'], 
+                    config['generation']['seed'], 
+                    config['generation']['output'], 
+                    config['generation']['topic_output'], 
+                    verbose=config['verbose'])
+    ```
+3. Generate low-level topics (optional)
+    ```python
+    if config['generate_subtopics']: 
+        generate_topic_lvl2(api, model, 
+                            config['generation']['topic_output'],
+                            config['generation']['output'],
+                            config['generation_2']['prompt'],
+                            config['generation_2']['output'],
+                            config['generation_2']['topic_output'],
+                            verbose=config['verbose'])
+    ```                  
+4. Refine the generated topics by merging near duplicates and removing topics with low frequency (optional):
+    ```python
+    if config['refining_topics']: 
+        refine_topics(api, model, 
+                    config['refinement']['prompt'],
+                    config['generation']['output'], 
+                    config['refinement']['topic_output'],
+                    config['refinement']['prompt'],
+                    config['refinement']['output'],
+                    verbose=config['verbose'],
+                    remove=config['refinement']['remove'], 
+                    mapping_file=config['refinement']['mapping_file'],
+                    refined_again=False,)       #TODO: change to True if you want to refine the topics again
+    ```
+5. Assign and correct the topics, usually with a weaker model if using paid APIs to save cost:
+    ```python
+    assign_topics(api, model, 
+                config['data_sample'],
+                    config['assignment']['prompt'],
+                    config['assignment']['output'],
+                    config['generation']['topic_output'], #TODO: change to generation_2 if you have subtopics, or config['refinement']['topic_output'] if you refined topics
+                    verbose=config['verbose'])
+
+    correct_topics(api, model, 
+                config['assignment']['output'],
+                config['correction']['prompt'],
+                config['generation']['topic_output'],      #TODO: change to generation_2 if you have subtopics, or config['refinement']['topic_output'] if you refined topics
+                config['correction']['output'],
+                verbose=config['verbose'])
     ```
 
-- Topic refinement: If you want to refine the topics, modify the prompts according to the templates in `templates/refinement.txt`. Then, to run topic refinement, do: 
-    ```
-    python3 refinement.py --deployment_name gpt-4 \
-                    --max_tokens 500 --temperature 0.0 --top_p 0.0 \
-                    --prompt_file prompt/refinement.txt \
-                    --generation_file data/output/generation_1.jsonl \
-                    --topic_file data/output/generation_1.md \
-                    --out_file data/output/refinement.md \
-                    --verbose True \
-                    --updated_file data/output/refinement.jsonl \
-                    --mapping_file data/output/refinement_mapping.txt \
-                    --refined_again False \
-                    --remove False
-    ```
+6. Check out the `data/output` folder for sample outputs.
+7. We also offer metric calculation functions in `topicgpt_python.metrics` to evaluate the alignment between the generated topics and the ground-truth labels (Adjusted Rand Index, Harmonic Purity, and Normalized Mutual Information).
 
-- Topic assignment: Modify the prompts according to the templates in `templates/assignment.txt`. Then, to run topic assignment, do: 
-    ```
-    python3 script/assignment.py --deployment_name gpt-3.5-turbo \
-                            --max_tokens 300 --temperature 0.0 --top_p 0.0 \
-                            --data data/input/sample.jsonl \
-                            --prompt_file prompt/assignment.txt \
-                            --topic_file data/output/generation_1.md \
-                            --out_file data/output/assignment.jsonl \
-                            --verbose True
-    ```
-- Topic correction: If the assignment contains errors or hallucinated topics, modify the prompts according to the templates in `templates/correction.txt` (note that this prompt is very similar to the assignment prompt, only adding a `{Message}` field towards the end of the prompt). Then, to run topic correction, do: 
-    ```
-    python3 script/correction.py --deployment_name gpt-3.5-turbo \
-                            --max_tokens 300 --temperature 0.0 --top_p 0.0 \
-                            --data data/output/assignment.jsonl \
-                            --prompt_file prompt/correction.txt \
-                            --topic_file data/output/generation_1.md \
-                            --out_file data/output/assignment_corrected.jsonl \
-                            --verbose True
-    ```
 
-- Second-level topic generation: If you want to generate second-level topics, modify the prompts according to the templates in `templates/generation_2.txt`. Then, to run second-level topic generation, do: 
-    ```
-    python3 script/generation_2.py --deployment_name gpt-4 \
-                    --max_tokens 300 --temperature 0.0 --top_p 0.0 \
-                    --data data/output/generation_1.jsonl \
-                    --seed_file data/output/generation_1.md \
-                    --prompt_file prompt/generation_2.txt \
-                    --out_file data/output/generation_2.jsonl \
-                    --topic_file data/output/generation_2.md \
-                    --verbose True
-    ```
-
-## Cite
+## 📜 Citation
 ```
 @misc{pham2023topicgpt,
       title={TopicGPT: A Prompt-based Topic Modeling Framework}, 

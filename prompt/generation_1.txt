@@ -33,5 +33,7 @@ Step 2: Perform ONE of the following operations:
 [Document]
 {Document}
 
-Please ONLY return the relevant or modified topics at the top level in the hierarchy.
-[Your response]
+Please ONLY return the relevant or modified topics at the top level in the hierarchy. Your response should be in the following format:
+[Topic Level] Topic Label: Topic Description
+
+Your response:

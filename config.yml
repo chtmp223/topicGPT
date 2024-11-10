@@ -1,0 +1,65 @@
+# --- Base Path ---
+# verbose: whether to print out module details or not
+# ----------------- 
+verbose: True 
+
+# --- Data Path ---
+# data_sample: input file (.jsonl format)
+# content: each file should have a text, and optionally id and label columns
+# ----------------- 
+data_sample: "data/input/sample.jsonl"
+
+# --- Generation ---
+# prompt: prompt to generate 1st-level topics
+# seed: seed topics (TODO: modify to fit your conception of the data)
+# output: output file containing texts and their corresponding generated topics
+# topic_output: md file containing all generated topics
+# ----------------- 
+generation:
+  prompt: "prompt/generation_1.txt"
+  seed: "prompt/seed_1.md"      
+  output: "data/output/sample/generation_1.jsonl"
+  topic_output: "data/output/sample/generation_1.md"
+
+# --- Refinement ---
+# refining_topics: whether to refine topics or not
+# prompt: prompt to merge near duplicate topics
+# output: output file, with an added refined_responses columns that replaces all removed/merged topics with the corresponding new topic
+# topic_output: md file containing the list of refined topics
+# mapping: mapping between originally generated topics and the topic they have been merged to
+# remove: whether to remove topics with low frequency (occurring <1% of the time)
+refining_topics: True
+refinement:
+  prompt: "prompt/refinement.txt"
+  output: "data/output/sample/refinement.jsonl"
+  topic_output: "data/output/sample/refinement.md"
+  mapping_file: "data/output/sample/refinement_mapping.json"
+  remove: True      
+
+# --- Subtopic Generation ---
+# generate_subtopics: whether to generate subtopics or not
+# prompt: prompt to generate subtopic to each high-level topic, given some example documents that correspond to that high-level topic
+# output: output file containing texts and their corresponding high-level and low-level topics
+# topic_output: md file containing topic tree
+# ---------------------------
+generate_subtopics: True
+generation_2:
+  prompt: "prompt/generation_2.txt"
+  output: "data/output/sample/generation_2.jsonl"
+  topic_output: "data/output/sample/generation_2.md"
+
+# --- Assignment ---
+# prompt: prompt to assign topics to documents
+# output: output of topic assignment
+# ------------------
+assignment:
+  prompt: "prompt/assignment.txt"
+  output: "data/output/sample/assignment.jsonl"
+
+# --- Correction ---
+# prompt: prompt to correct topics
+# output: output of topic correction
+# ------------------
+correction:
+  prompt: "prompt/correction.txt"
+  output: "data/output/sample/assignment_corrected.jsonl"

@@ -1,1 +1,1 @@
-[1] Trade
+[1] Trade: Mentions the exchange of capital, goods, and services.

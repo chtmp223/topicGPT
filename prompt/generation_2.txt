@@ -39,4 +39,5 @@ Step 2: Perform ONE of the following operations:
 {Document}
  
 DO NOT add first- or third-level topics.
-[Your response] 
+
+Your response:

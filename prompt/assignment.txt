@@ -26,4 +26,7 @@ Assignment:
 {Document}
 
 Double check that your assignment exists in the hierarchy!
+Your response should be in the following format:
+[Topic Level] Topic Label: Assignment reasoning (Supporting quote)
+
 Your response:
