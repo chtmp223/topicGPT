@@ -1,3 +1,2 @@
-[1] Environment (Count: 2): Pertains to the management, conservation, and protection of natural resources and ecosystems.
-[1] Indigenous Affairs (Count: 1): Addresses issues related to Native American tribes, their rights, compensation, and land management.
-[1] Transportation (Count: 2): Covers policies, infrastructure, and systems related to the movement of people and goods.
+[1] Environment (Count: 4): Involves the management and conservation of natural resources and ecosystems.
+[1] Immigration (Count: 1): Relates to policies and regulations concerning the movement of people across borders and their legal status.

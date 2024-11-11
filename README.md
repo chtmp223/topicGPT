@@ -85,10 +85,13 @@ Check out `demo.ipynb` for a complete pipeline and more detailed instructions. W
     ```python
     assign_topics(
     api, model, data, prompt_file, out_file, topic_file, verbose
-  )
-  correct_topics(
-    api, model, data_path, prompt_path, topic_path, output_path, verbose
-  ) 
+    )
+    ```
+
+    ```
+    correct_topics(
+        api, model, data_path, prompt_path, topic_path, output_path, verbose
+    ) 
     ```
 
 6. Check out the `data/output` folder for sample outputs.
