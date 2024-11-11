@@ -11,7 +11,7 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
 ![TopicGPT Pipeline Overview](assets/img/pipeline.png)
 
 ## 📣 Updates
-- [11/09/24] Python package `topicgpt_python` is released! You can install it via `pip install topicgpt_python`. We support OpenAI API, Vertex AI, and vLLM (requires GPUs for inference). See [PyPI](https://pypi.org/project/topicgpt-python/).
+- [11/09/24] Python package `topicgpt_python` is released! You can install it via `pip install topicgpt_python`. We support OpenAI API, VertexAI, Azure API, Gemini API, and vLLM (requires GPUs for inference). See [PyPI](https://pypi.org/project/topicgpt-python/).
 - [11/18/23] Second-level topic generation code and refinement code are uploaded.
 - [11/11/23] Basic pipeline is uploaded. Refinement and second-level topic generation code are coming soon.
 
@@ -24,9 +24,20 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
     ```
 - Set your API key:
     ```
+    # Run in shell
+    # Needed only for the OpenAI API deployment
     export OPENAI_API_KEY={your_openai_api_key}
-    export VERTEX_PROJECT={your_vertex_project}
-    export VERTEX_LOCATION={your_vertex_location}
+
+    # Needed only for the Vertex AI deployment
+    export VERTEX_PROJECT={your_vertex_project}   # e.g. my-project
+    export VERTEX_LOCATION={your_vertex_location} # e.g. us-central1
+
+    # Needed only for Gemini deployment
+    export GEMINI_API_KEY={your_gemini_api_key}
+
+    # Needed only for the Azure API deployment
+    export AZURE_OPENAI_API_KEY={your_azure_api_key}
+    export AZURE_OPENAI_ENDPOINT={your_azure_endpoint}
     ```
 - Refer to https://openai.com/pricing/ for OpenAI API pricing or to https://cloud.google.com/vertex-ai/pricing for Vertex API pricing. 
 
@@ -45,64 +56,39 @@ This repository contains scripts and prompts for our paper ["TopicGPT: Topic Mod
 ### Pipeline
 Check out `demo.ipynb` for a complete pipeline and more detailed instructions. We advise you to try running on a subset with cheaper (or open-source) models first before scaling up to the entire dataset. 
 
-0. Define I/O paths in `config.yml`. 
-1. Load the package and config file:
+0. (Optional) Define I/O paths in `config.yml` and load using: 
     ```python
-    from topicgpt_python import *
     import yaml
 
     with open("config.yml", "r") as f:
         config = yaml.safe_load(f)
     ```
+1. Load the package:
+    ```python
+    from topicgpt_python import *
+    ```
 2. Generate high-level topics:
     ```python
-    generate_topic_lvl1(api, model, 
-                    config['data_sample'], 
-                    config['generation']['prompt'], 
-                    config['generation']['seed'], 
-                    config['generation']['output'], 
-                    config['generation']['topic_output'], 
-                    verbose=config['verbose'])
+    generate_topic_lvl1(api, model, data, prompt_file, seed_file, out_file, topic_file, verbose)
     ```
 3. Generate low-level topics (optional)
     ```python
-    if config['generate_subtopics']: 
-        generate_topic_lvl2(api, model, 
-                            config['generation']['topic_output'],
-                            config['generation']['output'],
-                            config['generation_2']['prompt'],
-                            config['generation_2']['output'],
-                            config['generation_2']['topic_output'],
-                            verbose=config['verbose'])
-    ```                  
+    generate_topic_lvl2(api, model, seed_file, data, prompt_file, out_file, topic_file, verbose)
+    ```  
+
 4. Refine the generated topics by merging near duplicates and removing topics with low frequency (optional):
     ```python
-    if config['refining_topics']: 
-        refine_topics(api, model, 
-                    config['refinement']['prompt'],
-                    config['generation']['output'], 
-                    config['refinement']['topic_output'],
-                    config['refinement']['prompt'],
-                    config['refinement']['output'],
-                    verbose=config['verbose'],
-                    remove=config['refinement']['remove'], 
-                    mapping_file=config['refinement']['mapping_file'])       #TODO: change to True if you want to refine the topics again
+    refine_topics(api, model, prompt_file, generation_file, topic_file, out_file, updated_file, verbose, remove, mapping_file)
     ```
 5. Assign and correct the topics, usually with a weaker model if using paid APIs to save cost:
+    
     ```python
-    assign_topics(api, model, 
-                config['data_sample'],
-                    config['assignment']['prompt'],
-                    config['assignment']['output'],
-                    config['generation']['topic_output'], #TODO: change to generation_2 if you have subtopics, or config['refinement']['topic_output'] if you refined topics
-                    verbose=config['verbose'])
-
-    correct_topics(api, model, 
-                config['assignment']['output'],
-                config['correction']['prompt'],
-                config['generation']['topic_output'],      #TODO: change to generation_2 if you have subtopics, or config['refinement']['topic_output'] if you refined topics
-                config['correction']['output'],
-                verbose=config['verbose'])
+    assign_topics(
+    api, model, data, prompt_file, out_file, topic_file, verbose
+  )
+  correct_topics(
+    api, model, data_path, prompt_path, topic_path, output_path, verbose
+  ) 
     ```
 
 6. Check out the `data/output` folder for sample outputs.

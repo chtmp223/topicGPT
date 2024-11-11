@@ -146,3 +146,5 @@ static
 
 # personal
 topic-gpt/tests/*
+
+test.ipynb

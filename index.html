@@ -252,7 +252,7 @@
             with ground-truth labels (Adjusted Rand Index, Harmonic Purity,
             Normalized Mutual Information).
         <p class="tlr">
-          Our package supports OpenAI API, Google Cloud Vertex AI API, and vLLM
+          Our package supports OpenAI API, Google Cloud Vertex AI API, Gemini API, Azure API, and vLLM
           inference. vLLM requires GPUs to run. Please refer to
           <a
             class="link-body"
@@ -290,9 +290,19 @@
     >
       <div class="code-block">
         <pre><code>
+  # Needed only for the OpenAI API deployment
   export OPENAI_API_KEY={your_openai_api_key}
-  export VERTEX_PROJECT={your_vertex_project}
-  export VERTEX_LOCATION={your_vertex_location}
+  
+  # Needed only for the Vertex AI deployment
+  export VERTEX_PROJECT={your_vertex_project}   # e.g. my-project
+  export VERTEX_LOCATION={your_vertex_location} # e.g. us-central1
+  
+  # Needed only for Gemini deployment
+  export GEMINI_API_KEY={your_gemini_api_key}
+  
+  # Needed only for the Azure API deployment
+  export AZURE_OPENAI_API_KEY={your_azure_api_key}
+  export AZURE_OPENAI_ENDPOINT={your_azure_endpoint}
       </code></pre>
       </div>
     </div><br>
@@ -352,7 +362,7 @@
   <p>Generate high-level topics.</p>
   <ul>
     <li>
-      <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')
+      <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm', 'gemini', 'azure')
     </li>
     <li><strong>model</strong> (str): Model to run topic generation with</li>
     <li><strong>data</strong> (str): Input data file</li>
@@ -397,7 +407,7 @@
       <b>Function: generate_topic_lvl2</b>
       <p>Generate subtopics for each top-level topic.</p>
       <ul>
-        <li><strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')</li>
+        <li><strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm', 'azure', 'gemini')</li>
         <li><strong>model</strong> (str): Model to run topic generation with</li>
         <li><strong>seed_file</strong> (str): File to read seed topics from</li>
         <li><strong>data</strong> (str): Input data file</li>
@@ -463,7 +473,7 @@
       </p>
       <ul>
         <li>
-          <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')
+          <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm', 'azure', 'gemini')
         </li>
         <li><strong>model</strong> (str): Model to run topic refinement with</li>
         <li><strong>prompt_file</strong> (str): Path to the refinement prompt file</li>
@@ -545,7 +555,7 @@
       <p>Assign topics to a list of documents.</p>
       <ul>
         <li>
-          <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm')
+          <strong>api</strong> (str): API to use ('openai', 'vertex', 'vllm', 'azure', 'gemini')
         </li>
         <li><strong>model</strong> (str): Model to use</li>
         <li><strong>data</strong> (str): Data file</li>
@@ -588,7 +598,7 @@
       <p>Correct hallucinated topic assignments or errors.</p>
       <ul>
         <li>
-          <strong>api</strong>: API type (e.g., 'openai', 'vertex', 'vllm')
+          <strong>api</strong>: API type (e.g., 'openai', 'vertex', 'vllm', 'azure', 'gemini')
         </li>
         <li><strong>model</strong>: Model name (e.g., 'gpt-4')</li>
         <li><strong>data_path</strong>: Input data file (should be the output file from the assignment stage)</li>

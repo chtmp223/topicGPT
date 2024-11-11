@@ -5,8 +5,9 @@ import time
 import pandas as pd
 from anytree import Node
 import traceback
+import subprocess
 
-from openai import OpenAI
+from openai import OpenAI, AzureOpenAI
 import tiktoken
 from vllm import LLM, SamplingParams
 import vertexai
@@ -18,6 +19,8 @@ from vertexai.generative_models import (
     SafetySetting,
 )
 from anthropic import AnthropicVertex
+import google.generativeai as genai
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
 from sklearn import metrics
 import numpy as np
@@ -51,6 +54,8 @@ class APIClient:
                 project=os.environ["VERTEX_PROJECT"],
                 location=os.environ["VERTEX_LOCATION"],
             )
+            if model.startswith("gemini"): 
+                self.model_obj = genai.GenerativeModel(self.model)
         elif api == "vllm":
             self.hf_token = os.environ.get("HF_TOKEN")
             self.llm = LLM(
@@ -58,6 +63,15 @@ class APIClient:
                 download_dir=os.environ.get("HF_HOME", None),
             )
             self.tokenizer = self.llm.get_tokenizer()
+        elif api == "gemini": 
+            genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+            self.model_obj = genai.GenerativeModel(self.model)
+        elif api == "azure": 
+            self.client = AzureOpenAI(
+            api_key = os.getenv("AZURE_OPENAI_API_KEY"),  
+            api_version = "2024-02-01",
+            azure_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+            )
         else:
             raise ValueError(
                 f"API {api} not supported. Custom implementation required."
@@ -136,7 +150,7 @@ class APIClient:
 
         for attempt in range(num_try):
             try:
-                if self.api == "openai":
+                if self.api in ["openai", "azure"]:
                     completion = self.client.chat.completions.create(
                         model=self.model,
                         messages=message,
@@ -168,7 +182,7 @@ class APIClient:
                             max_tokens=max_tokens,
                             temperature=temperature,
                             system=system_message,
-                            messages=prompt,
+                            messages=[message[1]],
                         )
                         message_json_str = message.model_dump_json(indent=2)
                         message_dict = json.loads(message_json_str)
@@ -186,7 +200,6 @@ class APIClient:
                             )
                         return text_content
                     else:
-                        model = GenerativeModel(model_name=self.model)
                         config = GenerationConfig(
                             max_output_tokens=max_tokens,
                             temperature=temperature,
@@ -213,21 +226,17 @@ class APIClient:
                         ]
 
                         try:
-                            response = model.generate_content(
+                            response = self.model_obj.generate_content(
                                 system_message
                                 + prompt,  # Didn't find a way to add system message in the API
                                 generation_config=config,
                                 safety_settings=safety_config,
                             )
+                            return response.text.strip()
                         except:  # Avoid rate limiting issues
+                            traceback.print_exc()
                             time.sleep(60)
 
-                        response = model.generate_content(
-                            prompt,
-                            generation_config=config,
-                            safety_settings=safety_config,
-                        )
-                        return response.text.strip()
 
                 elif self.api == "vllm":
                     sampling_params = SamplingParams(
@@ -246,6 +255,33 @@ class APIClient:
                     )
                     vllm_output = self.llm.generate([final_prompt], sampling_params)
                     return [output.outputs[0].text for output in vllm_output][0]
+                
+                elif self.api == "gemini":
+                    genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+                    self.model_obj = genai.GenerativeModel(self.model)
+                    config = genai.types.GenerationConfig(
+                            max_output_tokens=max_tokens,
+                            temperature=temperature,
+                            top_p=top_p,
+                        )
+                    # safety config
+                    safety_config = {
+                        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                          HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                          HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                          HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE
+                          }
+                    try:
+                        response = self.model_obj.generate_content(
+                            system_message
+                            + prompt,  # Didn't find a way to add system message in the API
+                            generation_config=config,
+                            safety_settings=safety_config,
+                        )
+                        return response.text.strip()
+                    except:  # Avoid rate limiting issues
+                        traceback.print_exc()
+                        time.sleep(60)
 
             except Exception as e:
                 print(f"Attempt {attempt + 1}/{num_try} failed: {e}")

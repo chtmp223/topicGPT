@@ -246,7 +246,7 @@ def refine_topics(
     Main function to refine topics by merging and updating based on API response.
 
     Parameters:
-    - api (str): API to use ('openai', 'vertex', 'vllm').
+    - api (str): API to use ('openai', 'vertex', 'vllm', 'gemini', 'azure').
     - model (str): Model to use.
     - prompt_file (str): Path to the prompt file.
     - generation_file (str): Path to the generation JSON file.
@@ -306,7 +306,7 @@ def refine_topics(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--api", type=str, help="API to use ('openai', 'vertex', 'vllm')"
+        "--api", type=str, help="API to use ('openai', 'vertex', 'vllm', 'gemini', 'azure')"
     )
     parser.add_argument("--model", type=str, help="Model to use")
     parser.add_argument("--prompt_file", type=str, default="prompt/refinement.txt")

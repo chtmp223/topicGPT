@@ -190,7 +190,7 @@ def correct_topics(
     Main function to parse, correct, and save topic assignments.
 
     Parameters:
-    - api: API type (e.g., 'openai', 'vertex', 'vllm')
+    - api: API type (e.g., 'openai', 'vertex', 'vllm', 'gemini', 'azure')
     - model: Model name (e.g., 'gpt-4')
     - data_path: Path to data file
     - prompt_path: Path to prompt file
@@ -265,7 +265,7 @@ if __name__ == "__main__":
         "--api",
         type=str,
         required=True,
-        help="API type (e.g., 'openai', 'vertex', 'vllm')",
+        help="API type (e.g., 'openai', 'vertex', 'vllm', 'gemini', 'azure')",
     )
     parser.add_argument(
         "--model", type=str, required=True, help="Model name (e.g., 'gpt-4')"

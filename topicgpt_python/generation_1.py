@@ -157,7 +157,7 @@ def generate_topic_lvl1(
     Generate high-level topics
 
     Parameters:
-    - api (str): API to use ('openai', 'vertex', 'vllm')
+    - api (str): API to use ('openai', 'vertex', 'vllm', 'azure', 'gemini')
     - model (str): Model to use
     - data (str): Data file
     - prompt_file (str): File to read prompts from
@@ -234,7 +234,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--api",
         type=str,
-        help="API to use ('openai', 'vertex', 'vllm')",
+        help="API to use ('openai', 'vertex', 'vllm', 'azure', 'gemini')",
         default="openai",
     )
     parser.add_argument("--model", type=str, help="Model to use", default="gpt-4")

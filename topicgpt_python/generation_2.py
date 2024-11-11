@@ -242,7 +242,7 @@ def generate_topic_lvl2(
     Generate subtopics for each top-level topic.
 
     Parameters:
-    - api: API to use ('openai', 'vertex', 'vllm')
+    - api: API to use ('openai', 'vertex', 'vllm', 'azure', 'gemini')
     - model: Model to run topic generation with
     - seed_file: Seed file
     - data: Input data file
@@ -303,7 +303,7 @@ def generate_topic_lvl2(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--api", type=str, help="API to use ('openai', 'vertex', 'vllm')"
+        "--api", type=str, help="API to use ('openai', 'vertex', 'vllm', 'gemini', 'azure')"
     )
     parser.add_argument("--model", type=str, help="Model to run topic generation with")
 
