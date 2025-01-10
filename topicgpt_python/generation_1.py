@@ -10,6 +10,7 @@ from anytree import Node, RenderTree
 
 # Set environment variables
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+sbert = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 def prompt_formatting(
@@ -27,7 +28,6 @@ def prompt_formatting(
     Handle cases where prompt is too long.
     """
     # Load sentence transformer and calculate topic embeddings
-    sbert = SentenceTransformer("all-MiniLM-L6-v2")
     topic_str = "\n".join(
         [topic.split(":")[0].strip() for topic in topics_list]
     )  # Get rid of description in the actual prompt
