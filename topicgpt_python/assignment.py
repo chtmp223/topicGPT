@@ -11,6 +11,7 @@ import argparse
 import os
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+sbert = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 def assignment(
@@ -41,7 +42,6 @@ def assignment(
     Returns:
     - res: list of responses
     """
-    sbert = SentenceTransformer("all-MiniLM-L6-v2")
     tree_str = "\n".join(topics_root.to_topic_list(desc=True, count=False))
     prompted_docs, res = [], []
 
@@ -132,7 +132,6 @@ def assignment_batch(
     Returns:
     - res: list of responses
     """
-    sbert = SentenceTransformer("all-MiniLM-L6-v2")
     tree_str = "\n".join(topics_root.to_topic_list(desc=True, count=False))
     prompted_docs, res = [], []
     prompts = []

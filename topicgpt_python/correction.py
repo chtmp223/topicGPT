@@ -10,6 +10,7 @@ from topicgpt_python.utils import *
 
 # Disable parallel tokenizers to avoid warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+sbert = SentenceTransformer("all-MiniLM-L6-v2")
 
 
 def topic_parser(root_topics, df, verbose=False):
@@ -67,7 +68,6 @@ def correct(
     verbose=False,
 ):
     """Return documents with assigned topics based on relevance."""
-    sbert = SentenceTransformer("all-MiniLM-L6-v2")
     all_topics = "\n".join(topics_root.to_topic_list(desc=True, count=False))
 
     for i in tqdm(reprompt_idx, desc="Correcting topics"):
@@ -133,7 +133,6 @@ def correct_batch(
     verbose=False,
 ):
     """Return documents with assigned topics based on relevance."""
-    sbert = SentenceTransformer("all-MiniLM-L6-v2")
     all_topics = "\n".join(topics_root.to_topic_list(desc=True, count=False))
     prompts = []
 
