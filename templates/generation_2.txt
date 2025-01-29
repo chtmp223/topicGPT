@@ -17,8 +17,8 @@ Document 3:
 
 Your response: 
 [1] <1st level topic>
-    [2] <2nd level topic> (Document: 1, 3): <topic-description
-    [[2] <2nd level topic> (Document: 2):  <topic-description
+    [2] <2nd level topic> (Document: 1, 3): <topic-description>
+    [2] <2nd level topic> (Document: 2):  <topic-description>
 
 [Instructions]
 Step 1: Determine PRIMARY and GENERALIZABLE topics mentioned in the documents. 
