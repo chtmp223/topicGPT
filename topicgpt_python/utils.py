@@ -41,7 +41,7 @@ class APIClient:
     - batch_prompt: Batch prompting for vLLM API
     """
 
-    def __init__(self, api, model):
+    def __init__(self, api, model, host=None):
         self.api = api
         self.model = model
         self.client = None
@@ -56,6 +56,11 @@ class APIClient:
             )
             if model.startswith("gemini"): 
                 self.model_obj = genai.GenerativeModel(self.model)
+        elif api == "ollama": 
+            self.client = OpenAI(
+                base_url = 'http://localhost:11434/v1',
+                api_key='ollama', # required, but unused
+            )
         elif api == "vllm":
             self.hf_token = os.environ.get("HF_TOKEN")
             self.llm = LLM(
@@ -150,7 +155,7 @@ class APIClient:
 
         for attempt in range(num_try):
             try:
-                if self.api in ["openai", "azure"]:
+                if self.api in ["openai", "azure", "ollama"]:
                     completion = self.client.chat.completions.create(
                         model=self.model,
                         messages=message,
