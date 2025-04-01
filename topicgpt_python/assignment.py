@@ -282,7 +282,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--prompt_file",
         type=str,
-        default="prompt/generation_1.txt",
+        default="prompt/assignment.txt",
         help="File to read prompts from",
     )
     parser.add_argument(
@@ -295,7 +295,7 @@ if __name__ == "__main__":
         "--topic_file",
         type=str,
         default="data/output/generation_1.md",
-        help="File to write topics to",
+        help="File to read topics from",
     )
 
     parser.add_argument(
