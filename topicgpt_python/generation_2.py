@@ -313,7 +313,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data",
         type=str,
-        default="data/input/generation_1.jsonl",
+        default="data/output/generation_1.jsonl",
         help="Input data file",
     )
     parser.add_argument(
