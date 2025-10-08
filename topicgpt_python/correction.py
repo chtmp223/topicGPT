@@ -198,7 +198,7 @@ def correct_topics(
     - verbose: Print verbose output
     """
     api_client = APIClient(api=api, model=model)
-    max_tokens, temperature, top_p = 1000, 0.6, 0.9
+    max_tokens, temperature, top_p = 1000, 1.0, 0.9
     context_len = (
         128000
         if model not in ["gpt-3.5-turbo", "gpt-4"]
