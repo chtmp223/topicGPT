@@ -191,9 +191,10 @@ def assign_topics(
     out_file, 
     topic_file, 
     verbose, 
-    max_tokens=1000, 
-    temperature=0.0, 
-    top_p=1.0
+    max_tokens=1000,
+    temperature=0.0,
+    top_p=1.0,
+    context_len=None,
 ):
     """
     Assign topics to a list of documents
@@ -223,12 +224,13 @@ def assign_topics(
         print("-------------------")
 
     # Model configuration
-    context = (
-        128000
-        if model not in ["gpt-3.5-turbo", "gpt-4"]
-        else (4096 if model == "gpt-3.5-turbo" else 8000)
-    )
-    context_len = context - max_tokens
+    if context_len is None:
+        context = (
+            128000
+            if model not in ["gpt-3.5-turbo", "gpt-4"]
+            else (4096 if model == "gpt-3.5-turbo" else 8000)
+        )
+        context_len = context - max_tokens
 
     # Load data ----
     df = pd.read_json(data, lines=True)
@@ -321,6 +323,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--top_p", type=float, default=1.0, help="Top-p sampling threshold"
     )
+    parser.add_argument(
+        "--context_len", type=int, default=None,
+        help="Model context length in tokens (auto-detected if omitted)",
+    )
 
     args = parser.parse_args()
     assign_topics(
@@ -334,4 +340,5 @@ if __name__ == "__main__":
         args.max_tokens,
         args.temperature,
         args.top_p,
+        args.context_len,
     )

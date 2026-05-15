@@ -157,10 +157,11 @@ def generate_topic_lvl1(
     out_file, 
     topic_file, 
     verbose, 
-    max_tokens=1000, 
-    temperature=0.0, 
+    max_tokens=1000,
+    temperature=0.0,
     top_p=1.0,
-    early_stop=1000
+    early_stop=1000,
+    context_len=None,
 ):
     """
     Generate high-level topics
@@ -195,12 +196,13 @@ def generate_topic_lvl1(
         print("-------------------")
 
     # Model configuration
-    context = (
-        128000
-        if model not in ["gpt-3.5-turbo", "gpt-4"]
-        else (4096 if model == "gpt-3.5-turbo" else 8000)
-    )
-    context_len = context - max_tokens
+    if context_len is None:
+        context = (
+            128000
+            if model not in ["gpt-3.5-turbo", "gpt-4"]
+            else (4096 if model == "gpt-3.5-turbo" else 8000)
+        )
+        context_len = context - max_tokens
 
     # Load data
     df = pd.read_json(data, lines=True)
@@ -294,6 +296,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--top_p", type=float, default=1.0, help="Top-p sampling threshold"
     )
+    parser.add_argument(
+        "--early_stop", type=int, default=1000,
+        help="Early stop threshold for topic generation",
+    )
+    parser.add_argument(
+        "--context_len", type=int, default=None,
+        help="Model context length in tokens (auto-detected if omitted)",
+    )
     args = parser.parse_args()
     generate_topic_lvl1(
         args.api,
@@ -307,4 +317,6 @@ if __name__ == "__main__":
         args.max_tokens,
         args.temperature,
         args.top_p,
+        args.early_stop,
+        args.context_len,
     )

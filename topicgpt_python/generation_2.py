@@ -249,9 +249,10 @@ def generate_topic_lvl2(
     out_file, 
     topic_file, 
     verbose,
-     max_tokens=1000, 
-     temperature=0.0, 
-     top_p=1.0
+    max_tokens=1000,
+    temperature=0.0,
+    top_p=1.0,
+    context_len=None,
 ):
     """
     Generate subtopics for each top-level topic.
@@ -272,6 +273,13 @@ def generate_topic_lvl2(
     Returns: Root node of the topic tree
     """
     api_client = APIClient(api=api, model=model)
+    if context_len is None:
+        context_len = (
+            128000
+            if model not in ["gpt-3.5-turbo", "gpt-4"]
+            else (4096 if model == "gpt-3.5-turbo" else 8000)
+        )
+        context_len -= max_tokens
 
     if verbose:
         print("-------------------")
@@ -302,7 +310,7 @@ def generate_topic_lvl2(
         df,
         topics_root,
         generation_prompt,
-        128000,
+        context_len,
         max_tokens,
         temperature,
         top_p,
@@ -358,6 +366,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--top_p", type=float, default=1.0, help="Top-p sampling threshold"
     )
+    parser.add_argument(
+        "--context_len", type=int, default=None,
+        help="Model context length in tokens (auto-detected if omitted)",
+    )
     args = parser.parse_args()
 
     generate_topic_lvl2(
@@ -372,4 +384,5 @@ if __name__ == "__main__":
         args.max_tokens,
         args.temperature,
         args.top_p,
+        args.context_len,
     )

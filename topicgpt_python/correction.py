@@ -190,10 +190,11 @@ def correct_topics(
     prompt_path, 
     topic_path, 
     output_path, 
-    verbose=False, 
-    max_tokens=1000, 
-    temperature=0.6, 
-    top_p=0.9
+    verbose=False,
+    max_tokens=1000,
+    temperature=0.6,
+    top_p=0.9,
+    context_len=None,
 ):
     """
     Main function to parse, correct, and save topic assignments.
@@ -211,12 +212,13 @@ def correct_topics(
     - top_p (float): Top-p sampling threshold (default: 0.9)
     """
     api_client = APIClient(api=api, model=model)
-    context = (
-        128000
-        if model not in ["gpt-3.5-turbo", "gpt-4"]
-        else (4096 if model == "gpt-3.5-turbo" else 8000)
-    )
-    context_len = context - max_tokens
+    if context_len is None:
+        context = (
+            128000
+            if model not in ["gpt-3.5-turbo", "gpt-4"]
+            else (4096 if model == "gpt-3.5-turbo" else 8000)
+        )
+        context_len = context - max_tokens
 
     if verbose:
         print("-------------------")
@@ -318,6 +320,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--top_p", type=float, default=0.9, help="Top-p sampling threshold"
     )
+    parser.add_argument(
+        "--context_len", type=int, default=None,
+        help="Model context length in tokens (auto-detected if omitted)",
+    )
     args = parser.parse_args()
 
     correct_topics(
@@ -331,4 +337,5 @@ if __name__ == "__main__":
         args.max_tokens,
         args.temperature,
         args.top_p,
+        args.context_len,
     )
