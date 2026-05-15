@@ -91,9 +91,9 @@ def merge_topics(
     responses, orig_new = [], mapping
 
     pattern_topic = regex.compile(
-        r"^\[(\d+)\]([\w\s\-',]+)[^:]*:([\w\s,\.\-\/;']+) \(([^)]+)\)$"
+        r"^\[(\d+)\]([\w\s\-',-_\+#]+)[^:]*:([\w\s,\.\-\/;']+) \(([^)]+)\)$"
     )
-    pattern_original = regex.compile(r"\[(\d+)\]([\w\s\-',]+),?")
+    pattern_original = regex.compile(r"\[(\d+)\]([\w\s\-',_\+#]+),?")
 
     while len(new_pairs) > 1:
         refiner_prompt = refinement_prompt.format(Topics="\n".join(new_pairs))
@@ -241,6 +241,9 @@ def refine_topics(
     verbose,
     remove,
     mapping_file,
+    max_tokens=1000,
+    temperature=0.0,
+    top_p=1.0,
 ):
     """
     Main function to refine topics by merging and updating based on API response.
@@ -256,12 +259,14 @@ def refine_topics(
     - verbose (bool): If True, prints each replacement made.
     - remove (bool): If True, removes low-frequency topics.
     - mapping_file (str): Path to save the mapping as a JSON file.
+    - max_tokens (int): Maximum number of tokens to generate (default: 1000)
+    - temperature (float): Sampling temperature (default: 0.0)
+    - top_p (float): Top-p sampling threshold (default: 1.0)
 
     Returns:
     - None
     """
     api_client = APIClient(api=api, model=model)
-    max_tokens, temperature, top_p = 1000, 0.0, 1.0
     topics_root = TopicTree().from_topic_list(topic_file, from_file=True)
     if verbose:
         print("-------------------")
@@ -323,6 +328,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mapping_file", type=str, default="data/output/refiner_mapping.json"
     )
+    parser.add_argument(
+        "--max_tokens", type=int, default=1000, help="Maximum number of tokens to generate"
+    )
+    parser.add_argument(
+        "--temperature", type=float, default=0.0, help="Sampling temperature"
+    )
+    parser.add_argument(
+        "--top_p", type=float, default=1.0, help="Top-p sampling threshold"
+    )
 
     args = parser.parse_args()
     refine_topics(
@@ -335,5 +349,8 @@ if __name__ == "__main__":
         args.updated_file,
         args.verbose,
         args.remove,
-        args.mapping_file
+        args.mapping_file,
+        args.max_tokens,
+        args.temperature,
+        args.top_p,
     )

@@ -48,7 +48,7 @@ def parse_document_topics(df, topics_list):
 
     Returns: List of topics for each document
     """
-    pattern = regex.compile(r"^\[(\d+)\] ([\w\s]+):(.+)")
+    pattern = regex.compile(r"^\[(\d+)\] ([\w\s\+-_#]+):(.+)")
     all_topics = []
 
     responses = (
@@ -236,7 +236,17 @@ def generate_topics(
 
 
 def generate_topic_lvl2(
-    api, model, seed_file, data, prompt_file, out_file, topic_file, verbose
+    api,
+    model, 
+    seed_file, 
+    data, 
+    prompt_file, 
+    out_file, 
+    topic_file, 
+    verbose,
+     max_tokens=1000, 
+     temperature=0.0, 
+     top_p=1.0
 ):
     """
     Generate subtopics for each top-level topic.
@@ -250,11 +260,13 @@ def generate_topic_lvl2(
     - out_file: Output result file
     - topic_file: Output topics file
     - verbose: Enable verbose output
+    - max_tokens (int): Maximum number of tokens to generate (default: 1000)
+    - temperature (float): Sampling temperature (default: 0.0)
+    - top_p (float): Top-p sampling threshold (default: 1.0)
 
     Returns: Root node of the topic tree
     """
     api_client = APIClient(api=api, model=model)
-    max_tokens, temperature, top_p = 1000, 0.0, 1.0
 
     if verbose:
         print("-------------------")
@@ -332,6 +344,15 @@ if __name__ == "__main__":
         help="Output topics file",
     )
     parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--max_tokens", type=int, default=1000, help="Maximum number of tokens to generate"
+    )
+    parser.add_argument(
+        "--temperature", type=float, default=0.0, help="Sampling temperature"
+    )
+    parser.add_argument(
+        "--top_p", type=float, default=1.0, help="Top-p sampling threshold"
+    )
     args = parser.parse_args()
 
     generate_topic_lvl2(
@@ -343,4 +364,7 @@ if __name__ == "__main__":
         args.out_file,
         args.topic_file,
         args.verbose,
+        args.max_tokens,
+        args.temperature,
+        args.top_p,
     )
