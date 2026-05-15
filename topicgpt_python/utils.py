@@ -47,7 +47,10 @@ class APIClient:
 
         # Setting API key ----
         if api == "openai":
-            self.client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+            self.client = OpenAI(
+                api_key=os.environ["OPENAI_API_KEY"],
+                base_url=os.environ.get("OPENAI_BASE_URL"),
+            )
         elif api == "vertex":
             vertexai.init(
                 project=os.environ["VERTEX_PROJECT"],
