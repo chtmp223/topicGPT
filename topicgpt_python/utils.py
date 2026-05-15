@@ -9,7 +9,6 @@ import subprocess
 
 from openai import OpenAI, AzureOpenAI
 import tiktoken
-from vllm import LLM, SamplingParams
 import vertexai
 from vertexai.generative_models import (
     GenerationConfig,
@@ -62,6 +61,13 @@ class APIClient:
                 api_key='ollama', # required, but unused
             )
         elif api == "vllm":
+            try:
+                from vllm import LLM
+            except ImportError as e:
+                raise ImportError(
+                    "vLLM backend requires the optional 'vllm' extra. "
+                    "Install with: pip install 'topicgpt_python[vllm]'"
+                ) from e
             self.hf_token = os.environ.get("HF_TOKEN")
             self.llm = LLM(
                 self.model,
@@ -247,6 +253,7 @@ class APIClient:
 
 
                 elif self.api == "vllm":
+                    from vllm import SamplingParams
                     sampling_params = SamplingParams(
                         temperature=temperature,
                         top_p=top_p,
@@ -318,6 +325,7 @@ class APIClient:
         if self.api != "vllm":
             raise ValueError("Batch prompting not supported for this API.")
 
+        from vllm import SamplingParams
         sampling_params = SamplingParams(
             temperature=temperature,
             top_p=top_p,

@@ -14,7 +14,10 @@ setup(
     version="0.2.8",
     packages=find_packages(),
     install_requires=requirements,
-    author="Chau Minh Pham",
+    extras_require={
+        "vllm": ["vllm>=0.6.3.post1,<1.0.0"],
+    },
+    author="Chau Minh Pham, Alexander Hoyle, Simeng Sun, Mohit Iyyer",
     author_email="chautm.pham@gmail.com",
     description="Official implementation of TopicGPT: A Prompt-based Topic Modeling Framework (NAACL'24)",
     long_description=long_description,
