@@ -235,7 +235,8 @@ def assign_topics(
     # Load data ----
     df = pd.read_json(data, lines=True)
     docs = df["text"].tolist()
-    assignment_prompt = open(prompt_file, "r").read()
+    with open(prompt_file, "r") as f:
+        assignment_prompt = f.read()
     topics_root = TopicTree().from_topic_list(topic_file, from_file=True)
 
     # Prompting ----

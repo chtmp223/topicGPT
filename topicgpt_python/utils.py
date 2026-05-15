@@ -409,7 +409,11 @@ class TopicTree:
         - tree: Constructed TopicTree
         """
         tree = TopicTree()
-        topic_list = open(topic_src, "r").readlines() if from_file else topic_src
+        if from_file:
+            with open(topic_src, "r") as f:
+                topic_list = f.readlines()
+        else:
+            topic_list = topic_src
         topic_list = [topic for topic in topic_list if len(topic.strip()) > 0]
         pattern = regex.compile(r"^\[(\d+)\] (.+) \(Count: (\d+)\)\s?:(.+)?")
 
@@ -444,7 +448,11 @@ class TopicTree:
         - tree: Constructed TopicTree
         """
         tree = TopicTree()
-        topic_list = open(seed_file, "r").readlines() if seed_file else []
+        if seed_file:
+            with open(seed_file, "r") as f:
+                topic_list = f.readlines()
+        else:
+            topic_list = []
         topic_list = [topic for topic in topic_list if len(topic.strip()) > 0]
         pattern = regex.compile(r"^\[(\d+)\] (.+)")
 
@@ -613,19 +621,16 @@ class TopicTree:
         )
 
         if merged_topic_node:
-            final_count = total_count
-            if final_count <= total_count:
-                merged_topic_node.count = final_count
-                merged_topic_node.desc = new_topic_desc
+            merged_topic_node.count = total_count
+            merged_topic_node.desc = new_topic_desc
         else:
-            if total_count <= sum(node.count for node in nodes_to_merge):
-                merged_topic_node = self._add_node(
-                    lvl=parent_node.lvl + 1,
-                    label=new_topic_name,
-                    count=total_count,
-                    desc=new_topic_desc,
-                    parent_node=parent_node,
-                )
+            merged_topic_node = self._add_node(
+                lvl=parent_node.lvl + 1,
+                label=new_topic_name,
+                count=total_count,
+                desc=new_topic_desc,
+                parent_node=parent_node,
+            )
 
         for node in nodes_to_merge:
             if node != merged_topic_node:

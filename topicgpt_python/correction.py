@@ -231,7 +231,8 @@ def correct_topics(
         print("-------------------")
 
     df = pd.read_json(data_path, lines=True)
-    correction_prompt = open(prompt_path).read()
+    with open(prompt_path) as f:
+        correction_prompt = f.read()
     topics_root = TopicTree().from_topic_list(topic_path, from_file=True)
 
     error, hallucinated = topic_parser(topics_root, df, verbose)

@@ -207,7 +207,8 @@ def generate_topic_lvl1(
     # Load data
     df = pd.read_json(data, lines=True)
     docs = df["text"].tolist()
-    generation_prompt = open(prompt_file, "r").read()
+    with open(prompt_file, "r") as f:
+        generation_prompt = f.read()
     topics_root = TopicTree().from_seed_file(seed_file)
     topics_list = topics_root.to_topic_list(desc=True, count=False)
 

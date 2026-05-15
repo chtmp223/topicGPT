@@ -294,7 +294,8 @@ def generate_topic_lvl2(
 
     # Load data
     df = pd.read_json(data, lines=True)
-    generation_prompt = open(prompt_file).read()
+    with open(prompt_file) as f:
+        generation_prompt = f.read()
     topics_root = TopicTree().from_topic_list(seed_file, from_file=True)
     topics_list = topics_root.to_topic_list(desc=False, count=False)
     df["topics"] = parse_document_topics(df, topics_list)

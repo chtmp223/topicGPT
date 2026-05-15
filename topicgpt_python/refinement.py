@@ -283,7 +283,8 @@ def refine_topics(
         json.load(open(mapping_file, "r")) if os.path.exists(mapping_file) else {}
     )
 
-    refinement_prompt = open(prompt_file, "r").read()
+    with open(prompt_file, "r") as f:
+        refinement_prompt = f.read()
     responses, updated_topics_root, mapping = merge_topics(
         topics_root,
         mapping_org,
