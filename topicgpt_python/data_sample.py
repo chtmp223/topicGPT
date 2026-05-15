@@ -43,4 +43,4 @@ if __name__ == "__main__":
         help="file containing generation samples",
     )
     args = parser.parse_args()
-    sample_data(args.data, args.num_sample, args.out_file)
+    sample_data(args.data, args.out_file, args.num_sample)

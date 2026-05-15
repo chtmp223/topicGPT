@@ -13,9 +13,9 @@ from vllm import LLM, SamplingParams
 import vertexai
 from vertexai.generative_models import (
     GenerationConfig,
-    GenerativeModel,
-    HarmBlockThreshold,
-    HarmCategory,
+    GenerativeModel as VertexGenerativeModel,
+    HarmBlockThreshold as VertexHarmBlockThreshold,
+    HarmCategory as VertexHarmCategory,
     SafetySetting,
 )
 from anthropic import AnthropicVertex
@@ -54,8 +54,8 @@ class APIClient:
                 project=os.environ["VERTEX_PROJECT"],
                 location=os.environ["VERTEX_LOCATION"],
             )
-            if model.startswith("gemini"): 
-                self.model_obj = genai.GenerativeModel(self.model)
+            if model.startswith("gemini"):
+                self.model_obj = VertexGenerativeModel(self.model)
         elif api == "ollama": 
             self.client = OpenAI(
                 base_url = 'http://localhost:11434/v1',
@@ -220,34 +220,30 @@ class APIClient:
                         # safety config
                         safety_config = [
                             SafetySetting(
-                                category=HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                                threshold=HarmBlockThreshold.BLOCK_NONE,
+                                category=VertexHarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                                threshold=VertexHarmBlockThreshold.BLOCK_NONE,
                             ),
                             SafetySetting(
-                                category=HarmCategory.HARM_CATEGORY_HARASSMENT,
-                                threshold=HarmBlockThreshold.BLOCK_NONE,
+                                category=VertexHarmCategory.HARM_CATEGORY_HARASSMENT,
+                                threshold=VertexHarmBlockThreshold.BLOCK_NONE,
                             ),
                             SafetySetting(
-                                category=HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                                threshold=HarmBlockThreshold.BLOCK_NONE,
+                                category=VertexHarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                                threshold=VertexHarmBlockThreshold.BLOCK_NONE,
                             ),
                             SafetySetting(
-                                category=HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                                threshold=HarmBlockThreshold.BLOCK_NONE,
+                                category=VertexHarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                                threshold=VertexHarmBlockThreshold.BLOCK_NONE,
                             ),
                         ]
 
-                        try:
-                            response = self.model_obj.generate_content(
-                                system_message
-                                + prompt,  # Didn't find a way to add system message in the API
-                                generation_config=config,
-                                safety_settings=safety_config,
-                            )
-                            return response.text.strip()
-                        except:  # Avoid rate limiting issues
-                            traceback.print_exc()
-                            time.sleep(60)
+                        response = self.model_obj.generate_content(
+                            system_message
+                            + prompt,  # Didn't find a way to add system message in the API
+                            generation_config=config,
+                            safety_settings=safety_config,
+                        )
+                        return response.text.strip()
 
 
                 elif self.api == "vllm":
@@ -283,17 +279,13 @@ class APIClient:
                           HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
                           HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE
                           }
-                    try:
-                        response = self.model_obj.generate_content(
-                            system_message
-                            + prompt,  # Didn't find a way to add system message in the API
-                            generation_config=config,
-                            safety_settings=safety_config,
-                        )
-                        return response.text.strip()
-                    except:  # Avoid rate limiting issues
-                        traceback.print_exc()
-                        time.sleep(60)
+                    response = self.model_obj.generate_content(
+                        system_message
+                        + prompt,  # Didn't find a way to add system message in the API
+                        generation_config=config,
+                        safety_settings=safety_config,
+                    )
+                    return response.text.strip()
 
             except Exception as e:
                 print(f"Attempt {attempt + 1}/{num_try} failed: {e}")
@@ -432,10 +424,10 @@ class TopicTree:
                     int(match.group(3)),
                     match.group(4).strip() if match.group(4) else "",
                 )
-            except:
-                print(match)
+            except Exception:
                 print("Error reading", topic)
                 traceback.print_exc()
+                continue
 
             tree._add_node(lvl, label, count, desc, tree.level_nodes.get(lvl - 1))
 
@@ -465,10 +457,10 @@ class TopicTree:
                     int(match.group(1)),
                     match.group(2).strip(),
                 )
-            except:
-                print(match)
+            except Exception:
                 print("Error reading", topic)
                 traceback.print_exc()
+                continue
 
             tree._add_node(lvl, label, 1, "", tree.level_nodes.get(lvl - 1))
 

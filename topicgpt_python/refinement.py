@@ -91,9 +91,9 @@ def merge_topics(
     responses, orig_new = [], mapping
 
     pattern_topic = regex.compile(
-        r"^\[(\d+)\]([\w\s\-',-_\+#]+)[^:]*:([\w\s,\.\-\/;']+) \(([^)]+)\)$"
+        r"^\[(\d+)\]([\w\s',_+#\-]+)[^:]*:([\w\s,\.\-\/;']+) \(([^)]+)\)$"
     )
-    pattern_original = regex.compile(r"\[(\d+)\]([\w\s\-',_\+#]+),?")
+    pattern_original = regex.compile(r"\[(\d+)\]([\w\s',_+#\-]+),?")
 
     while len(new_pairs) > 1:
         refiner_prompt = refinement_prompt.format(Topics="\n".join(new_pairs))
@@ -134,6 +134,7 @@ def merge_topics(
             print("Error when calling API!")
             traceback.print_exc()
 
+        topic_sent = topics_root.to_topic_list(desc=True, count=False)
         new_pairs, all_pairs = topic_pairs(
             topic_sent, all_pairs, threshold=0.5, num_pair=2
         )

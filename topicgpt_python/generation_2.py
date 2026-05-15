@@ -48,7 +48,7 @@ def parse_document_topics(df, topics_list):
 
     Returns: List of topics for each document
     """
-    pattern = regex.compile(r"^\[(\d+)\] ([\w\s\+-_#]+):(.+)")
+    pattern = regex.compile(r"^\[(\d+)\] ([\w\s+_#\-]+):(.+)")
     all_topics = []
 
     responses = (
@@ -137,10 +137,15 @@ def parse_and_add_topics(result, current_topic, pattern, verbose, topics_root):
         match = regex.match(pattern, line)
         if match:
             if ":" in line and add_node:  # add the topic to the tre
+                tail = match.group(5)
+                if tail is None:
+                    if verbose:
+                        print(f"Skipping unparseable subtopic line: {line}")
+                    continue
                 lvl, name, description = (
                     int(match.group(1)),
                     match.group(2).strip(),
-                    match.group(5).strip(" :"),
+                    tail.strip(" :"),
                 )
                 clean_name = name
                 clean_description = description

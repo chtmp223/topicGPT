@@ -153,14 +153,12 @@ def assignment_batch(
             seed_str = ""
             while seed_len < context_len and len(top_top) > 0:
                 new_seed = top_top.pop(0)
-                if (
-                    seed_len + api_client.estimate_token_count(new_seed + "\n")
-                    > context_len
-                ):
+                seed_tokens = api_client.estimate_token_count(new_seed + "\n")
+                if seed_len + seed_tokens > context_len:
                     break
                 else:
                     seed_str += new_seed + "\n"
-                    seed_len += api_client.estimate_token_count(seed_str)
+                    seed_len += seed_tokens
         else:
             seed_str = tree_str
 
@@ -180,7 +178,7 @@ def assignment_batch(
         prompted_docs.append(doc)
 
     responses = api_client.batch_prompt(
-        prompts, max_tokens, temperature, top_p, verbose
+        prompts, max_tokens, temperature, top_p
     )
     return responses, prompted_docs
 

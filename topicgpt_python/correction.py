@@ -99,7 +99,7 @@ def correct(
                 correction_prompt + current_topics
             )
             if api_client.estimate_token_count(doc) > max_doc_len:
-                doc = api_client.truncate(doc, max_doc_len)
+                doc = api_client.truncating(doc, max_doc_len)
 
         try:
             msg = f"Previously, this document was assigned to: {df.at[i, 'responses']}. Please reassign it to an existing topic in the hierarchy."
@@ -166,18 +166,18 @@ def correct_batch(
                 correction_prompt + current_topics
             )
             if api_client.estimate_token_count(doc) > max_doc_len:
-                doc = api_client.truncate(doc, max_doc_len)
+                doc = api_client.truncating(doc, max_doc_len)
         msg = f"Previously, this document was assigned to: {df.at[i, 'responses']}. Please reassign it to an existing topic in the hierarchy."
         prompt = correction_prompt.format(Document=doc, tree=current_topics, Message=msg)
         prompts.append(prompt)
 
     responses = api_client.batch_prompt(
-        prompts, max_tokens, temperature, top_p, verbose
+        prompts, max_tokens, temperature, top_p
     )
-    for responses, i in zip(responses, reprompt_idx):
-        df.at[i, "responses"] = responses
+    for resp, i in zip(responses, reprompt_idx):
+        df.at[i, "responses"] = resp
         if verbose:
-            print(f"Document {i+1}: {responses}")
+            print(f"Document {i+1}: {resp}")
             print("-" * 20)
 
     return df
@@ -211,11 +211,12 @@ def correct_topics(
     - top_p (float): Top-p sampling threshold (default: 0.9)
     """
     api_client = APIClient(api=api, model=model)
-    context_len = (
+    context = (
         128000
         if model not in ["gpt-3.5-turbo", "gpt-4"]
-        else (4096 if model == "gpt-3.5-turbo" else 8000) - max_tokens
+        else (4096 if model == "gpt-3.5-turbo" else 8000)
     )
+    context_len = context - max_tokens
 
     if verbose:
         print("-------------------")
@@ -235,7 +236,7 @@ def correct_topics(
     reprompt_idx = error + hallucinated
 
     if len(reprompt_idx) > 0:
-        if model == "vllm":
+        if api == "vllm":
             df = correct_batch(
                 api_client,
                 topics_root,

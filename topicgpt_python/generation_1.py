@@ -60,14 +60,12 @@ def prompt_formatting(
             seed_len, seed_str = 0, ""
             while seed_len < max_top_len and sim_topics:
                 new_seed = sim_topics.pop(0)
-                if (
-                    seed_len + api_client.estimate_token_count(new_seed + "\n")
-                    > max_top_len
-                ):
+                seed_tokens = api_client.estimate_token_count(new_seed + "\n")
+                if seed_len + seed_tokens > max_top_len:
                     break
                 else:
                     seed_str += new_seed + "\n"
-                    seed_len += api_client.estimate_token_count(seed_str)
+                    seed_len += seed_tokens
             prompt = generation_prompt.format(Document=doc, Topics=seed_str)
     else:
         prompt = generation_prompt.format(Document=doc, Topics=topic_str)
