@@ -174,7 +174,7 @@ def generate_topics(
     temperature,
     top_p,
     verbose,
-    max_topic_num=50,
+    max_topic_num=None,
 ):
     """
     Generate subtopics for each top-level topic.
@@ -189,7 +189,7 @@ def generate_topics(
     - temperature: Sampling temperature
     - top_p: Top-p sampling threshold
     - verbose: Enable verbose output
-    - max_topic_num: Maximum number of topics to generate
+    - max_topic_num: Cap on number of parent topics expanded (None = no cap)
 
     Returns: List of generated subtopics and documents
     """
@@ -198,7 +198,13 @@ def generate_topics(
         r"^\[(\d+)\] ([\w\s\-'\&,]+)(\(Document(?:s)?: ((?:(?:\d+)(?:(?:, )?)|-)+)\)([:\-\w\s,.\n'\&]*?))?$"
     )
 
+    parents_processed = 0
     for parent_topic in tqdm(filter_topics_by_count(topics_root.root.descendants, df)):
+        if max_topic_num is not None and parents_processed >= max_topic_num:
+            if verbose:
+                print(f"Reached max_topic_num={max_topic_num}; stopping lvl2.")
+            break
+        parents_processed += 1
         current_topic = f"[{parent_topic.lvl}] {parent_topic.name}"
         if verbose:
             print("Current topic:", current_topic)
@@ -253,6 +259,7 @@ def generate_topic_lvl2(
     temperature=0.0,
     top_p=1.0,
     context_len=None,
+    max_topic_num=None,
 ):
     """
     Generate subtopics for each top-level topic.
@@ -316,6 +323,7 @@ def generate_topic_lvl2(
         temperature,
         top_p,
         verbose,
+        max_topic_num=max_topic_num,
     )
 
     # Write results
@@ -371,6 +379,10 @@ if __name__ == "__main__":
         "--context_len", type=int, default=None,
         help="Model context length in tokens (auto-detected if omitted)",
     )
+    parser.add_argument(
+        "--max_topic_num", type=int, default=None,
+        help="Cap on number of parent topics expanded into subtopics (None = no cap)",
+    )
     args = parser.parse_args()
 
     generate_topic_lvl2(
@@ -386,4 +398,5 @@ if __name__ == "__main__":
         args.temperature,
         args.top_p,
         args.context_len,
+        args.max_topic_num,
     )
